@@ -6,11 +6,12 @@ import {
   FaCalendarAlt,
   FaCalculator,
   FaChartLine,
-  FaAppleAlt,
   FaUtensils,
   FaExchangeAlt,
 } from "react-icons/fa";
 import { useAuth } from "../../../hooks/useAuth";
+import logoColorido from "../../../assets/logo-colorido.png";
+import logoIcone from "../../../assets/logo-icone.png";
 import "./Sidebar.css";
 
 interface SidebarProps {
@@ -107,14 +108,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       className={`sidebar ${isOpen ? "sidebar--open" : "sidebar--closed"}`}
     >
       <div className="sidebar__logo">
-        <div className="sidebar__logo-icon">
-          <FaAppleAlt size={28} />
-        </div>
-        {isOpen && (
-          <div className="sidebar__logo-text">
-            <span className="sidebar__logo-name">NutriManager</span>
-            <span className="sidebar__logo-tagline">Sistema de Gestão</span>
-          </div>
+        {isOpen ? (
+          <img src={logoColorido} alt="Nutrize" className="sidebar__logo-img" />
+        ) : (
+          <img src={logoIcone} alt="Nutrize" className="sidebar__logo-icone" />
         )}
       </div>
 
@@ -145,7 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
         {isOpen && (
           <div className="sidebar__version">
             <p>Versão 1.0.0</p>
-            <p>© 2025 NutriManager</p>
+            <p>© 2025 Nutrize</p>
           </div>
         )}
       </div>

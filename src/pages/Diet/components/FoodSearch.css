@@ -21,7 +21,7 @@
 .food-search__spinner {
   position: absolute;
   right: 1rem;
-  color: #16a34a;
+  color: #e88413;
   font-size: 1rem;
   animation: spin 1s linear infinite;
 }
@@ -48,8 +48,8 @@
 }
 
 .food-search__input:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .food-search__input::placeholder {
@@ -162,6 +162,6 @@
 
 .food-search__item-nutrition span:first-child {
   font-weight: 600;
-  color: #16a34a;
+  color: #e88413;
 }
 

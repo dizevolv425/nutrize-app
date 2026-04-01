@@ -11,7 +11,7 @@ import type {
 let emailConfig: EmailServiceConfig = {
   enabled: false,
   fromEmail: "noreply@nutrimanager.com",
-  fromName: "NutriManager",
+  fromName: "Nutrize",
 };
 
 /**
@@ -34,19 +34,19 @@ export function isEmailServiceEnabled(): boolean {
  */
 function getEmailSubject(template: EmailTemplate, _data: Record<string, any>): string {
   const subjects: Record<EmailTemplate, string> = {
-    appointment_confirmation: "Confirmação de Agendamento - NutriManager",
-    appointment_reminder: "Lembrete de Consulta - NutriManager",
-    appointment_approved: "Consulta Aprovada - NutriManager",
-    appointment_rejected: "Consulta Não Aprovada - NutriManager",
-    diet_ready: "Sua Dieta Está Pronta - NutriManager",
-    substitution_approved: "Substituição Aprovada - NutriManager",
-    substitution_rejected: "Substituição Não Aprovada - NutriManager",
-    trial_warning: "Aviso: Período de Trial Expirando - NutriManager",
-    trial_expired: "Período de Trial Expirado - NutriManager",
-    welcome: "Bem-vindo ao NutriManager!",
+    appointment_confirmation: "Confirmação de Agendamento - Nutrize",
+    appointment_reminder: "Lembrete de Consulta - Nutrize",
+    appointment_approved: "Consulta Aprovada - Nutrize",
+    appointment_rejected: "Consulta Não Aprovada - Nutrize",
+    diet_ready: "Sua Dieta Está Pronta - Nutrize",
+    substitution_approved: "Substituição Aprovada - Nutrize",
+    substitution_rejected: "Substituição Não Aprovada - Nutrize",
+    trial_warning: "Aviso: Período de Trial Expirando - Nutrize",
+    trial_expired: "Período de Trial Expirado - Nutrize",
+    welcome: "Bem-vindo ao Nutrize!",
   };
 
-  return subjects[template] || "Notificação - NutriManager";
+  return subjects[template] || "Notificação - Nutrize";
 }
 
 /**
@@ -82,7 +82,7 @@ function getEmailBody(template: EmailTemplate, data: Record<string, any>): strin
             <p><strong>Horário:</strong> ${data.appointmentTime || "N/A"}</p>
             ${data.nutritionistName ? `<p><strong>Nutricionista:</strong> ${data.nutritionistName}</p>` : ""}
             <p>Por favor, confirme sua presença ou entre em contato caso precise reagendar.</p>
-            <p>Atenciosamente,<br>Equipe NutriManager</p>
+            <p>Atenciosamente,<br>Equipe Nutrize</p>
           </div>
           <div class="footer">
             <p>Este é um email automático, por favor não responda.</p>
@@ -116,7 +116,7 @@ function getEmailBody(template: EmailTemplate, data: Record<string, any>): strin
             <p><strong>Data:</strong> ${data.appointmentDate || "N/A"}</p>
             <p><strong>Horário:</strong> ${data.appointmentTime || "N/A"}</p>
             <p>Nos vemos em breve!</p>
-            <p>Atenciosamente,<br>Equipe NutriManager</p>
+            <p>Atenciosamente,<br>Equipe Nutrize</p>
           </div>
           <div class="footer">
             <p>Este é um email automático, por favor não responda.</p>
@@ -150,7 +150,7 @@ function getEmailBody(template: EmailTemplate, data: Record<string, any>): strin
             <p><strong>Data:</strong> ${data.appointmentDate || "N/A"}</p>
             <p><strong>Horário:</strong> ${data.appointmentTime || "N/A"}</p>
             <p>Estamos ansiosos para atendê-lo(a)!</p>
-            <p>Atenciosamente,<br>Equipe NutriManager</p>
+            <p>Atenciosamente,<br>Equipe Nutrize</p>
           </div>
           <div class="footer">
             <p>Este é um email automático, por favor não responda.</p>
@@ -183,7 +183,7 @@ function getEmailBody(template: EmailTemplate, data: Record<string, any>): strin
             <p>Infelizmente, sua solicitação de consulta não pôde ser aprovada no momento.</p>
             ${data.reason ? `<p><strong>Motivo:</strong> ${data.reason}</p>` : ""}
             <p>Por favor, entre em contato conosco para reagendar ou escolher outro horário.</p>
-            <p>Atenciosamente,<br>Equipe NutriManager</p>
+            <p>Atenciosamente,<br>Equipe Nutrize</p>
           </div>
           <div class="footer">
             <p>Este é um email automático, por favor não responda.</p>
@@ -217,7 +217,7 @@ function getEmailBody(template: EmailTemplate, data: Record<string, any>): strin
             <p>Sua dieta personalizada está pronta e disponível para visualização!</p>
             <p><strong>Dieta:</strong> ${data.dietName || "Nova Dieta"}</p>
             <p>Acesse o aplicativo para visualizar todos os detalhes da sua dieta.</p>
-            <p>Atenciosamente,<br>Equipe NutriManager</p>
+            <p>Atenciosamente,<br>Equipe Nutrize</p>
           </div>
           <div class="footer">
             <p>Este é um email automático, por favor não responda.</p>
@@ -249,7 +249,7 @@ function getEmailBody(template: EmailTemplate, data: Record<string, any>): strin
             <p>Olá ${data.clientName || "Cliente"},</p>
             <p>Sua solicitação de substituição de alimento foi aprovada!</p>
             <p>Acesse o aplicativo para ver os detalhes.</p>
-            <p>Atenciosamente,<br>Equipe NutriManager</p>
+            <p>Atenciosamente,<br>Equipe Nutrize</p>
           </div>
           <div class="footer">
             <p>Este é um email automático, por favor não responda.</p>
@@ -282,7 +282,7 @@ function getEmailBody(template: EmailTemplate, data: Record<string, any>): strin
             <p>Sua solicitação de substituição não pôde ser aprovada.</p>
             ${data.reason ? `<p><strong>Motivo:</strong> ${data.reason}</p>` : ""}
             <p>Por favor, entre em contato para mais informações.</p>
-            <p>Atenciosamente,<br>Equipe NutriManager</p>
+            <p>Atenciosamente,<br>Equipe Nutrize</p>
           </div>
           <div class="footer">
             <p>Este é um email automático, por favor não responda.</p>
@@ -315,8 +315,8 @@ function getEmailBody(template: EmailTemplate, data: Record<string, any>): strin
             <p>Olá ${data.userName || "Usuário"},</p>
             <p>Seu período de trial está expirando em breve!</p>
             <p><strong>Dias restantes:</strong> ${data.daysRemaining || "N/A"}</p>
-            <p>Para continuar usando o NutriManager, assine um de nossos planos.</p>
-            <p>Atenciosamente,<br>Equipe NutriManager</p>
+            <p>Para continuar usando o Nutrize, assine um de nossos planos.</p>
+            <p>Atenciosamente,<br>Equipe Nutrize</p>
           </div>
           <div class="footer">
             <p>Este é um email automático, por favor não responda.</p>
@@ -347,8 +347,8 @@ function getEmailBody(template: EmailTemplate, data: Record<string, any>): strin
           </div>
           <div class="content">
             <p>Olá ${data.userName || "Usuário"},</p>
-            <p>Seu período de trial expirou. Para continuar usando o NutriManager, assine um de nossos planos.</p>
-            <p>Atenciosamente,<br>Equipe NutriManager</p>
+            <p>Seu período de trial expirou. Para continuar usando o Nutrize, assine um de nossos planos.</p>
+            <p>Atenciosamente,<br>Equipe Nutrize</p>
           </div>
           <div class="footer">
             <p>Este é um email automático, por favor não responda.</p>
@@ -374,13 +374,13 @@ function getEmailBody(template: EmailTemplate, data: Record<string, any>): strin
       <body>
         <div class="container">
           <div class="header">
-            <h1>Bem-vindo ao NutriManager!</h1>
+            <h1>Bem-vindo ao Nutrize!</h1>
           </div>
           <div class="content">
             <p>Olá ${data.userName || "Usuário"},</p>
-            <p>Bem-vindo ao NutriManager! Estamos felizes em tê-lo(a) conosco.</p>
+            <p>Bem-vindo ao Nutrize! Estamos felizes em tê-lo(a) conosco.</p>
             <p>Comece a usar todas as funcionalidades disponíveis em nossa plataforma.</p>
-            <p>Atenciosamente,<br>Equipe NutriManager</p>
+            <p>Atenciosamente,<br>Equipe Nutrize</p>
           </div>
           <div class="footer">
             <p>Este é um email automático, por favor não responda.</p>

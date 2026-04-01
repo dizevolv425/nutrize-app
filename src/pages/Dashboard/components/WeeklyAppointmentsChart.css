@@ -32,7 +32,7 @@
 
 .weekly-appointments-chart__loading .spinner {
   font-size: 2rem;
-  color: #16a34a;
+  color: #e88413;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
 }

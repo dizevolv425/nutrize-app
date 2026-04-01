@@ -17,7 +17,7 @@ export const TrialExpired: React.FC = () => {
         <h1 className="trial-expired__title">Período de Trial Expirado</h1>
         <p className="trial-expired__message">
           Seu período de teste de 10 dias chegou ao fim. Para continuar usando
-          o NutriManager, é necessário assinar um plano.
+          o Nutrize, é necessário assinar um plano.
         </p>
         <div className="trial-expired__actions">
           <Button

@@ -60,7 +60,7 @@
 }
 
 .checkout-success-page__icon {
-  color: #16a34a;
+  color: #e88413;
   font-size: 5rem;
   margin-bottom: 1.5rem;
   animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
@@ -93,7 +93,7 @@
 }
 
 .checkout-success-page__message strong {
-  color: #16a34a;
+  color: #e88413;
   font-weight: 700;
 }
 
@@ -114,8 +114,8 @@
 .checkout-success-plan__icon {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, #16a34a15 0%, #15803d15 100%);
-  color: #16a34a;
+  background: linear-gradient(135deg, #e8841315 0%, #c96d0a15 100%);
+  color: #e88413;
   border-radius: 12px;
   display: flex;
   align-items: center;

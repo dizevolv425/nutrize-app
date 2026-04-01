@@ -78,7 +78,7 @@
 }
 
 .appointment-requests__client-info svg {
-  color: #16a34a;
+  color: #e88413;
   font-size: 1.5rem;
 }
 
@@ -129,7 +129,7 @@
   padding: 1rem;
   background: #f9fafb;
   border-radius: 8px;
-  border-left: 3px solid #16a34a;
+  border-left: 3px solid #e88413;
 }
 
 .appointment-requests__notes p {

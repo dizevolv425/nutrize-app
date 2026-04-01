@@ -109,8 +109,8 @@
 }
 
 .goal-modal__textarea:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .goal-modal__textarea::placeholder {

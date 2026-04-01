@@ -34,7 +34,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 configureEmailService({
   enabled: true,
   fromEmail: "noreply@nutrimanager.com",
-  fromName: "NutriManager",
+  fromName: "Nutrize",
 });
 */
 

@@ -18,7 +18,7 @@
 .diet-detail__spinner {
   font-size: 2rem;
   animation: spin 1s linear infinite;
-  color: #16a34a;
+  color: #e88413;
 }
 
 @keyframes spin {
@@ -132,8 +132,8 @@
 }
 
 .diet-detail__summary {
-  background: #f0fdf4;
-  border: 2px solid #16a34a;
+  background: #fff7ed;
+  border: 2px solid #e88413;
   border-radius: 16px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -175,7 +175,7 @@
 }
 
 .diet-detail__summary-value--calories {
-  color: #16a34a;
+  color: #e88413;
   font-size: 1.75rem;
 }
 

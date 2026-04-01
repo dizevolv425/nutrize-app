@@ -18,7 +18,7 @@
 .request-substitution__spinner {
   font-size: 2rem;
   animation: spin 1s linear infinite;
-  color: #16a34a;
+  color: #e88413;
 }
 
 @keyframes spin {
@@ -124,8 +124,8 @@
 .request-substitution__select:focus,
 .request-substitution__input:focus,
 .request-substitution__textarea:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .request-substitution__textarea {

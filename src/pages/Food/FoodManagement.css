@@ -17,7 +17,7 @@
 .food-management__spinner {
   font-size: 2rem;
   animation: spin 1s linear infinite;
-  color: #16a34a;
+  color: #e88413;
 }
 
 @keyframes spin {
@@ -81,8 +81,8 @@
 }
 
 .food-management__search-input:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .food-management__count {
@@ -160,8 +160,8 @@
 
 .food-management__form-field input:focus,
 .food-management__form-field select:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .food-management__meals-checkboxes {

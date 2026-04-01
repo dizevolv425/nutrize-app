@@ -40,7 +40,7 @@
 }
 
 .meal-section__total-item:first-child {
-  color: #16a34a;
+  color: #e88413;
   font-weight: 600;
 }
 
@@ -137,7 +137,7 @@
 }
 
 .meal-section__food-btn--edit:hover {
-  background: #16a34a;
+  background: #e88413;
   color: white;
 }
 
@@ -148,7 +148,7 @@
 
 .meal-section__food-nutrition {
   font-size: 0.875rem;
-  color: #16a34a;
+  color: #e88413;
   font-weight: 600;
   min-width: 60px;
   text-align: right;
@@ -172,8 +172,8 @@
 }
 
 .meal-section__food-input:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .meal-section__food-unit {

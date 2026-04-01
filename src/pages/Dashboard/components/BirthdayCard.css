@@ -97,6 +97,13 @@
   font-size: 0.85rem;
 }
 
+.birthday-card__next-appointment {
+  font-size: 0.75rem;
+  color: #e88413;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
 .birthday-card__last-visit {
   font-size: 0.75rem;
   color: #b45309;

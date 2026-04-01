@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import logoColorido from "../../../assets/logo-colorido.png";
 import {
   FaUserCircle,
   FaBell,
@@ -136,13 +137,12 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           className="header__toggle-btn"
           onClick={onToggleSidebar}
-          aria-label="Toggle sidebar"
+          aria-label="Abrir/fechar menu lateral"
         >
           {isSidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
         </button>
         <div className="header__brand">
-          <h1 className="header__brand-name">NutriManager</h1>
-          <span className="header__brand-tagline">Gestão Nutricional</span>
+          <img src={logoColorido} alt="Nutrize" className="header__brand-logo" />
         </div>
       </div>
 
@@ -161,16 +161,19 @@ export const Header: React.FC<HeaderProps> = ({
               {isExpired ? (
                 <span className="header__trial-expired">Trial Expirado</span>
               ) : daysRemaining !== null ? (
-                <>
-                  <span className="header__trial-days">{daysRemaining}</span>
-                  <span className="header__trial-label">
-                    {daysRemaining === 1 ? "dia restante" : "dias restantes"}
-                  </span>
-                </>
+                <span className="header__trial-label">
+                  Faltam {daysRemaining} {daysRemaining === 1 ? "dia restante" : "dias restantes"}
+                </span>
               ) : (
                 "Trial Ativo"
               )}
             </span>
+            <button
+              className="header__trial-subscribe-btn"
+              onClick={() => navigate(paths.subscription)}
+            >
+              Assine agora
+            </button>
           </div>
         )}
 

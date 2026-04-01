@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   deleteUser,
+  sendPasswordResetEmail,
   type Unsubscribe,
   onAuthStateChanged,
 } from "firebase/auth";
@@ -21,6 +22,15 @@ interface firebaseError {
 }
 
 export const authService = {
+  async sendPasswordReset(email: string): Promise<void> {
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      const message = getFirebaseErrorMessage(error as firebaseError | string);
+      throw new Error(message);
+    }
+  },
+
   async logOut(): Promise<void> {
     try {
       await signOut(auth);

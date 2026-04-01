@@ -147,7 +147,7 @@
   align-items: center;
   gap: 0.5rem;
   background: #ecfdf5;
-  color: #16a34a;
+  color: #e88413;
   padding: 0.75rem;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -170,7 +170,7 @@
 }
 
 .checkout-summary__security svg {
-  color: #16a34a;
+  color: #e88413;
 }
 
 .checkout-page__form {
@@ -199,7 +199,7 @@
 }
 
 .checkout-form__section-title svg {
-  color: #16a34a;
+  color: #e88413;
 }
 
 .checkout-payment-methods {
@@ -227,15 +227,15 @@
 }
 
 .checkout-payment-method:hover {
-  border-color: #16a34a;
-  background: #f0fdf4;
-  color: #16a34a;
+  border-color: #e88413;
+  background: #fff7ed;
+  color: #e88413;
 }
 
 .checkout-payment-method--active {
-  border-color: #16a34a;
+  border-color: #e88413;
   background: #ecfdf5;
-  color: #16a34a;
+  color: #e88413;
 }
 
 .checkout-payment-method svg {
@@ -388,7 +388,7 @@
 
 .checkout-pix-modal__icon svg {
   font-size: 3rem;
-  color: #16a34a;
+  color: #e88413;
 }
 
 .checkout-pix-modal__title {
@@ -434,7 +434,7 @@
 .checkout-pix-modal__amount-value {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #16a34a;
+  color: #e88413;
 }
 
 .checkout-pix-modal__code-section {

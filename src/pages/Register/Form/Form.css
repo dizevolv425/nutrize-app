@@ -21,7 +21,7 @@
 }
 
 .user-register-form__header {
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  background: linear-gradient(135deg, #e88413 0%, #c96d0a 100%);
   padding: 2rem;
   text-align: center;
   position: relative;
@@ -180,7 +180,7 @@
 }
 
 .user-register-form .input-field__input:focus {
-  border-color: #16a34a;
+  border-color: #e88413;
   box-shadow: 0 0 0 5px rgba(31, 41, 55, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
   transform: translateY(-2px);
   outline: none;
@@ -208,7 +208,7 @@
 }
 
 .login-form__submit-btn:hover {
-  background: linear-gradient(135deg, #15803d 0%, #166534 100%) !important;
+  background: linear-gradient(135deg, #c96d0a 0%, #b05808 100%) !important;
 }
 .user-register-form .select-field__select {
   padding: 0.875rem 1rem;
@@ -222,7 +222,7 @@
 }
 
 .user-register-form .select-field__select:focus {
-  border-color: #16a34a;
+  border-color: #e88413;
   box-shadow: 0 0 0 4px rgba(31, 41, 55, 0.1);
   transform: translateY(-1px);
 }
@@ -249,7 +249,7 @@
 .user-register-form__submit-btn {
   min-width: 280px;
   padding: 1rem 2.5rem;
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  background: linear-gradient(135deg, #e88413 0%, #c96d0a 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -284,7 +284,7 @@
 }
 
 .user-register-form__submit-btn:hover {
-  background: linear-gradient(135deg, #15803d 0%, #166534 100%) !important;
+  background: linear-gradient(135deg, #c96d0a 0%, #b05808 100%) !important;
   transform: translateY(-3px);
   box-shadow: 0 10px 30px rgba(31, 41, 55, 0.45);
 }
@@ -459,9 +459,9 @@
   display: inline-block;
   padding: 12px 32px;
   background: transparent;
-  color: #16a34a;
+  color: #e88413;
   text-decoration: none;
-  border: 2px solid #16a34a;
+  border: 2px solid #e88413;
   border-radius: 10px;
   font-weight: 600;
   font-size: 14px;
@@ -478,7 +478,7 @@
   left: 0;
   width: 0;
   height: 100%;
-  background: #16a34a;
+  background: #e88413;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: -1;
 }

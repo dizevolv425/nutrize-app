@@ -56,7 +56,7 @@ export default function LoginForm() {
       <div className="login-form__header">
         <h1 className="login-form__title">Bem-vindo de volta!</h1>
         <p className="login-form__subtitle">
-          Acesse o NutriManager e continue oferecendo o melhor atendimento
+          Acesse o Nutrize e continue oferecendo o melhor atendimento
           nutricional aos seus pacientes
         </p>
       </div>
@@ -99,16 +99,9 @@ export default function LoginForm() {
           {isLoading ? "Entrando..." : "Entrar"}
         </Button>
 
-        <a 
-          href="#" 
-          className="login-form__forgot-password"
-          onClick={(e) => {
-            e.preventDefault();
-            console.log("Link 'Esqueceu sua senha?' clicado");
-          }}
-        >
+        <Link to={paths.forgotPassword} className="login-form__forgot-password">
           Esqueceu sua senha?
-        </a>
+        </Link>
 
         <div className="login-form__divider">
           <span>ou</span>

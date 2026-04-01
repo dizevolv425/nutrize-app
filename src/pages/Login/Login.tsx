@@ -2,12 +2,8 @@
 
 import LoginForm from "./Form/Form";
 import "./Login.css";
-import {
-  FaAppleAlt,
-  FaUsers,
-  FaChartLine,
-  FaClipboardList,
-} from "react-icons/fa";
+import { FaUsers, FaChartLine, FaClipboardList } from "react-icons/fa";
+import logoBranco from "../../assets/logo-branco.png";
 
 export default function LoginPage() {
   return (
@@ -20,13 +16,7 @@ export default function LoginPage() {
         <div className="login-page__brand-section">
           <div className="login-page__brand-content">
             <div className="login-page__logo">
-              <div className="login-page__logo-icon">
-                <FaAppleAlt
-                  className="logo-svg"
-                  style={{ width: "100%", height: "100%", color: "white" }}
-                />
-              </div>
-              <h2 className="login-page__brand-name">NutriManager</h2>
+              <img src={logoBranco} alt="Nutrize" className="login-page__logo-img" />
             </div>
 
             <div className="login-page__brand-description">

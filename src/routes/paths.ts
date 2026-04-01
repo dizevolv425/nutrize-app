@@ -23,6 +23,7 @@ export const paths = {
   appointmentRequests: "/dashboard/admin/appointment-requests",
   foodManagement: "/dashboard/admin/alimentos",
   // Rotas de autenticação
+  forgotPassword: "/recuperar-senha",
   clientLogin: "/cliente/login",
   trialExpired: "/trial-expirado",
   subscription: "/assinatura",

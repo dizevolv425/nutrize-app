@@ -38,8 +38,8 @@
 
 .input-field__input:focus {
   outline: none;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .input-field__input--error {
@@ -80,12 +80,12 @@
 }
 
 .input-field__toggle-password:hover {
-  color: #16a34a;
+  color: #e88413;
 }
 
 .input-field__toggle-password:focus {
   outline: none;
-  color: #16a34a;
+  color: #e88413;
 }
 
 .input-field__toggle-password:disabled {

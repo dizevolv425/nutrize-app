@@ -137,8 +137,8 @@
 .document-modal__input:focus,
 .document-modal__select:focus {
   outline: none;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .document-modal__input:disabled,
@@ -163,8 +163,8 @@
 }
 
 .document-modal__file-input:hover:not(:disabled) {
-  border-color: #16a34a;
-  background: #f0fdf4;
+  border-color: #e88413;
+  background: #fff7ed;
 }
 
 .document-modal__file-input:disabled {

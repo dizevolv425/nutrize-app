@@ -162,12 +162,11 @@ export const FinancialChart: React.FC = () => {
         <div className="financial-chart__card financial-chart__card--projection">
           <div className="financial-chart__card-header">
             <FaChartLine size={16} />
-            <p className="financial-chart__card-label">Projeção</p>
+            <p className="financial-chart__card-label">Projeções de receita</p>
           </div>
           <p className="financial-chart__card-value">
             {formatCurrency(projection)}
           </p>
-          <p className="financial-chart__card-subtitle">Próximas consultas</p>
         </div>
       </div>
 

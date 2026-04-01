@@ -85,8 +85,8 @@
 }
 
 .services-manager__item:hover {
-  border-color: #16a34a;
-  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 2px 8px rgba(232, 132, 19, 0.1);
 }
 
 .services-manager__item--inactive {
@@ -126,7 +126,7 @@
 }
 
 .services-manager__item-price {
-  color: #16a34a;
+  color: #e88413;
 }
 
 .services-manager__item-separator {
@@ -158,17 +158,17 @@
 }
 
 .services-manager__action-btn:hover {
-  border-color: #16a34a;
-  background: #f0fdf4;
-  color: #16a34a;
+  border-color: #e88413;
+  background: #fff7ed;
+  color: #e88413;
 }
 
 .services-manager__action-btn--toggle {
-  color: #16a34a;
+  color: #e88413;
 }
 
 .services-manager__action-btn--toggle:hover {
-  background: #16a34a;
+  background: #e88413;
   color: white;
 }
 
@@ -255,8 +255,8 @@
 
 .services-manager__input:focus {
   outline: none;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .services-manager__input--error {

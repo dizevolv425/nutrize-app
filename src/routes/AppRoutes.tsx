@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { paths } from "./paths";
 import { RegisterPage } from "../pages/Register/Register";
 import LoginPage from "../pages/Login/Login";
+import ForgotPasswordPage from "../pages/ForgotPassword/ForgotPassword";
 import ClientLoginPage from "../pages/ClientLogin/ClientLogin";
 import { TrialExpired } from "../pages/TrialExpired/TrialExpired";
 import { Subscription } from "../pages/Subscription/Subscription";
@@ -42,6 +43,7 @@ export default function AppRoutes() {
         <Routes>
           <Route path="/" element={<Navigate to={paths.login} replace />} />
           <Route path={paths.login} element={<LoginPage />} />
+          <Route path={paths.forgotPassword} element={<ForgotPasswordPage />} />
           <Route path={paths.clientLogin} element={<ClientLoginPage />} />
           <Route path={paths.register} element={<RegisterPage />} />
           <Route path={paths.trialExpired} element={<TrialExpired />} />

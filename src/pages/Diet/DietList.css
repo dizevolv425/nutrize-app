@@ -17,7 +17,7 @@
 .diet-list__spinner {
   font-size: 2rem;
   animation: spin 1s linear infinite;
-  color: #16a34a;
+  color: #e88413;
 }
 
 @keyframes spin {
@@ -87,8 +87,8 @@
 }
 
 .diet-list__search-input:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .diet-list__count {
@@ -132,7 +132,7 @@
 
 .diet-list__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
@@ -149,8 +149,8 @@
 }
 
 .diet-card:hover {
-  border-color: #16a34a;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+  border-color: #e88413;
+  box-shadow: 0 4px 12px rgba(232, 132, 19, 0.15);
   transform: translateY(-2px);
 }
 
@@ -206,7 +206,7 @@
 }
 
 .diet-card__nutrition-value--calories {
-  color: #16a34a;
+  color: #e88413;
   font-size: 1.25rem;
 }
 
@@ -225,7 +225,7 @@
 }
 
 .diet-card__arrow {
-  color: #16a34a;
+  color: #e88413;
   font-size: 1.25rem;
   font-weight: 600;
 }

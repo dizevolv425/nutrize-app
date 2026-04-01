@@ -412,7 +412,7 @@
 
 .financeiro__transaction--income:hover {
   border-color: #10b981;
-  background: linear-gradient(to right, #f0fdf4 0%, white 5%);
+  background: linear-gradient(to right, #fff7ed 0%, white 5%);
 }
 
 .financeiro__transaction--expense:hover {

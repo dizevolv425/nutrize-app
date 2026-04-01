@@ -44,6 +44,11 @@
   width: 100%;
 }
 
+/* Backdrop mobile */
+.dashboard-layout__backdrop {
+  display: none;
+}
+
 /* Responsive */
 @media (max-width: 968px) {
   .dashboard-layout__content--sidebar-open,
@@ -54,11 +59,25 @@
   .dashboard-layout__main {
     padding: 1.5rem;
   }
+
+  .dashboard-layout__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 199;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-layout__main {
+    padding: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
   .dashboard-layout__main {
-    padding: 1rem;
+    padding: 0.75rem;
   }
 }
 

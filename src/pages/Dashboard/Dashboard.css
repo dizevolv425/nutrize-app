@@ -49,7 +49,7 @@
 }
 
 .dashboard__date {
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  background: linear-gradient(135deg, #e88413 0%, #c96d0a 100%);
   color: white;
   padding: 0.75rem 1.25rem;
   border-radius: 12px;
@@ -155,7 +155,7 @@
 
 .dashboard__period-btn.active {
   background: white;
-  color: #16a34a;
+  color: #e88413;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 

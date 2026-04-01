@@ -7,6 +7,7 @@ import type { RegisterCredentials } from "../../../types/user";
 import { useAuth } from "../../../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import { paths } from "../../../routes/paths";
+import { maskPhone } from "../../../utils/masks";
 import "./Form.css";
 
 type FormErrors = Partial<Record<keyof RegisterCredentials, string>>;
@@ -30,6 +31,16 @@ export const RegisterForm: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
+    if (!formData.name.trim()) {
+      newErrors.name = "Nome é obrigatório";
+    }
+
+    if (!formData.phone?.trim()) {
+      newErrors.phone = "Telefone é obrigatório";
+    } else if (formData.phone.replace(/\D/g, "").length < 10) {
+      newErrors.phone = "Telefone inválido — informe DDD + número";
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
       newErrors.email = "Email é obrigatório";
@@ -43,15 +54,22 @@ export const RegisterForm: React.FC = () => {
       newErrors.password = "Senha deve ter pelo menos 6 caracteres";
     }
 
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Confirmação de senha é obrigatória";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "As senhas não conferem";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleInputChange =
     (field: keyof RegisterCredentials) => (value: string) => {
+      const maskedValue = field === "phone" ? maskPhone(value) : value;
       setFormData((prev) => ({
         ...prev,
-        [field]: value,
+        [field]: maskedValue,
       }));
 
       if (errors[field]) {
@@ -111,7 +129,7 @@ export const RegisterForm: React.FC = () => {
     <div className="user-register-form">
       <div className="user-register-form__header">
         <h1 className="user-register-form__title">
-          Cadastro de Nutricionista - NutriManager
+          Cadastro de Nutricionista - Nutrize
         </h1>
         <p className="user-register-form__subtitle">
           Crie sua conta e comece a otimizar sua gestão nutricional hoje mesmo
@@ -130,12 +148,12 @@ export const RegisterForm: React.FC = () => {
             required
           />
           <InputField
-            type="text"
+            type="tel"
             label="Telefone"
             value={formData.phone || ""}
             onChange={handleInputChange("phone")}
             error={errors.phone}
-            placeholder="Digite seu telefone"
+            placeholder="(11) 99999-9999"
             required
           />
           <InputField

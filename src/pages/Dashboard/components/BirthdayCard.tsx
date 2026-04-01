@@ -11,6 +11,7 @@ interface Birthday {
   age: number;
   phone: string;
   lastVisit: string;
+  nextAppointment?: string;
 }
 
 export const BirthdayCard: React.FC = () => {
@@ -41,17 +42,26 @@ export const BirthdayCard: React.FC = () => {
               );
             })
             .map(async (client) => {
-              // Buscar última consulta
+              // Buscar consultas para última visita e próxima consulta
               let lastVisit = "Nunca";
+              let nextAppointment: string | undefined;
               try {
                 const appointments = await getAppointmentsByClient(client.id);
                 if (appointments.length > 0) {
-                  // Ordenar por data e pegar a mais recente
-                  appointments.sort(
-                    (a, b) => b.date.getTime() - a.date.getTime()
-                  );
-                  const lastAppointment = appointments[0];
-                  lastVisit = lastAppointment.date.toLocaleDateString("pt-BR");
+                  const now = new Date();
+                  const past = appointments
+                    .filter((a) => a.date < now)
+                    .sort((a, b) => b.date.getTime() - a.date.getTime());
+                  const future = appointments
+                    .filter((a) => a.date >= now && a.status === "scheduled")
+                    .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+                  if (past.length > 0) {
+                    lastVisit = past[0].date.toLocaleDateString("pt-BR");
+                  }
+                  if (future.length > 0) {
+                    nextAppointment = `${future[0].date.toLocaleDateString("pt-BR")} às ${future[0].startTime.substring(0, 5)}`;
+                  }
                 }
               } catch (error) {
                 console.error(
@@ -76,6 +86,7 @@ export const BirthdayCard: React.FC = () => {
                 age: actualAge,
                 phone: client.phone,
                 lastVisit,
+                nextAppointment,
               };
             })
         );
@@ -94,7 +105,7 @@ export const BirthdayCard: React.FC = () => {
 
   const handleWhatsApp = (phone: string, name: string) => {
     const message = encodeURIComponent(
-      `Olá ${name}! 🎉 Feliz aniversário! Desejamos um dia maravilhoso e cheio de realizações! 🎂✨`
+      `Olá ${name}! Feliz aniversário! Desejamos um dia maravilhoso e cheio de realizações!`
     );
     const phoneNumber = phone.replace(/\D/g, "");
     window.open(`https://wa.me/55${phoneNumber}?text=${message}`, "_blank");
@@ -143,6 +154,11 @@ export const BirthdayCard: React.FC = () => {
               <FaPhone size={12} color="#b45309" />
               <span className="birthday-card__phone">{birthday.phone}</span>
             </div>
+            {birthday.nextAppointment && (
+              <div className="birthday-card__next-appointment">
+                Próxima consulta: {birthday.nextAppointment}
+              </div>
+            )}
             <div className="birthday-card__last-visit">
               Última consulta: {birthday.lastVisit}
             </div>

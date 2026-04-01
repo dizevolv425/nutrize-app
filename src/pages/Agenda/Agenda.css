@@ -62,7 +62,7 @@
 
 .agenda__spinner {
   font-size: 2.5rem;
-  color: #16a34a;
+  color: #e88413;
   animation: spin 1s linear infinite;
 }
 
@@ -116,12 +116,12 @@
 }
 
 .agenda__tab:hover {
-  color: #16a34a;
+  color: #e88413;
 }
 
 .agenda__tab--active {
-  color: #16a34a;
-  border-bottom-color: #16a34a;
+  color: #e88413;
+  border-bottom-color: #e88413;
 }
 
 .agenda__calendar-wrapper {
@@ -270,7 +270,7 @@
 }
 
 .rbc-toolbar button {
-  color: #16a34a;
+  color: #e88413;
   border: 1px solid #e5e7eb;
   background: white;
   padding: 0.5rem 1rem;
@@ -280,16 +280,16 @@
 }
 
 .rbc-toolbar button:hover {
-  background: #16a34a;
+  background: #e88413;
   color: white;
-  border-color: #16a34a;
+  border-color: #e88413;
 }
 
 .rbc-toolbar button:active,
 .rbc-toolbar button.rbc-active {
-  background: #16a34a;
+  background: #e88413;
   color: white;
-  border-color: #16a34a;
+  border-color: #e88413;
   box-shadow: none;
 }
 
@@ -512,5 +512,20 @@
 
   .agenda__split-view-right {
     max-height: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .agenda__title {
+    font-size: 1.25rem;
+  }
+
+  .agenda__calendar-wrapper > div {
+    height: 420px !important;
+  }
+
+  .agenda__tab {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
   }
 }

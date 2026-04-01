@@ -148,8 +148,8 @@ select.appointment-modal__input {
 
 .appointment-modal__input:focus,
 .appointment-modal__textarea:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .appointment-modal__input--error {
@@ -225,12 +225,12 @@ select.appointment-modal__input {
 }
 
 .appointment-modal::-webkit-scrollbar-thumb {
-  background: #16a34a;
+  background: #e88413;
   border-radius: 10px;
 }
 
 .appointment-modal::-webkit-scrollbar-thumb:hover {
-  background: #15803d;
+  background: #c96d0a;
 }
 
 /* Responsive */

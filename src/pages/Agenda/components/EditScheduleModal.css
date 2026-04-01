@@ -88,12 +88,12 @@
 }
 
 .edit-schedule-modal__tab:hover {
-  color: #16a34a;
+  color: #e88413;
 }
 
 .edit-schedule-modal__tab--active {
-  color: #16a34a;
-  border-bottom-color: #16a34a;
+  color: #e88413;
+  border-bottom-color: #e88413;
   background: white;
 }
 
@@ -147,12 +147,12 @@
 }
 
 .edit-schedule-modal__info {
-  background: #f0fdf4;
+  background: #fff7ed;
   border: 1px solid #bbf7d0;
   border-radius: 8px;
   padding: 1rem;
   font-size: 0.875rem;
-  color: #166534;
+  color: #b05808;
 }
 
 .edit-schedule-modal__info p {
@@ -174,8 +174,8 @@
 }
 
 .edit-schedule-modal__day:hover {
-  border-color: #16a34a;
-  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 2px 8px rgba(232, 132, 19, 0.1);
 }
 
 .edit-schedule-modal__day-header {
@@ -194,7 +194,7 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #16a34a;
+  accent-color: #e88413;
 }
 
 .edit-schedule-modal__day-name {
@@ -228,8 +228,8 @@
 
 .edit-schedule-modal__time-input:focus {
   outline: none;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .edit-schedule-modal__slot-separator {
@@ -271,7 +271,7 @@
   border: 1px dashed #d1d5db;
   background: transparent;
   border-radius: 8px;
-  color: #16a34a;
+  color: #e88413;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -279,8 +279,8 @@
 }
 
 .edit-schedule-modal__add-slot:hover {
-  border-color: #16a34a;
-  background: #f0fdf4;
+  border-color: #e88413;
+  background: #fff7ed;
 }
 
 .edit-schedule-modal__add-slot:disabled {
@@ -324,8 +324,8 @@
 
 .edit-schedule-modal__input:focus {
   outline: none;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .edit-schedule-modal__input--error {

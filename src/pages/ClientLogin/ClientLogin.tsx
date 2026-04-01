@@ -3,11 +3,11 @@
 import ClientLoginForm from "./Form/Form";
 import "./ClientLogin.css";
 import {
-  FaAppleAlt,
   FaUser,
   FaCalendarCheck,
   FaUtensils,
 } from "react-icons/fa";
+import logoBranco from "../../assets/logo-branco.png";
 
 export default function ClientLoginPage() {
   return (
@@ -20,13 +20,7 @@ export default function ClientLoginPage() {
         <div className="client-login-page__brand-section">
           <div className="client-login-page__brand-content">
             <div className="client-login-page__logo">
-              <div className="client-login-page__logo-icon">
-                <FaAppleAlt
-                  className="logo-svg"
-                  style={{ width: "100%", height: "100%", color: "white" }}
-                />
-              </div>
-              <h2 className="client-login-page__brand-name">NutriManager</h2>
+              <img src={logoBranco} alt="Nutrize" className="client-login-page__logo-img" />
             </div>
 
             <div className="client-login-page__brand-description">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaClock, FaUser, FaPhone, FaSpinner } from "react-icons/fa";
 import { useAuth } from "../../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { getTodayAppointments } from "../../../services/appointmentService";
 import { getClientById } from "../../../services/clientService";
 import type { Appointment } from "../../../types/appointment";
@@ -12,6 +13,7 @@ interface AppointmentWithClient extends Appointment {
 
 export const ScheduleSummary: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState<AppointmentWithClient[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -142,7 +144,7 @@ export const ScheduleSummary: React.FC = () => {
       ) : (
         <div className="schedule-summary__list">
           {appointments.map((appointment) => (
-            <div key={appointment.id} className="schedule-summary__appointment">
+            <div key={appointment.id} className="schedule-summary__appointment" onClick={() => navigate("/dashboard/agenda")} style={{ cursor: "pointer" }}>
               <div className="schedule-summary__appointment-header">
                 <div className="schedule-summary__appointment-time">
                   <FaClock size={14} color="#667eea" />

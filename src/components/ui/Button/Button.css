@@ -17,7 +17,7 @@
 }
 
 .button:focus {
-  box-shadow: 0 0 0 2px #16a34a;
+  box-shadow: 0 0 0 2px #e88413;
 }
 
 .button:disabled {
@@ -27,12 +27,12 @@
 
 /* Variantes */
 .button--primary {
-  background-color: #16a34a;
+  background-color: #e88413;
   color: #ffffff;
 }
 
 .button--primary:hover:not(:disabled) {
-  background-color: #15803d;
+  background-color: #c96d0a;
 }
 
 .button--secondary {

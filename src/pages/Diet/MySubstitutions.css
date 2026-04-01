@@ -17,7 +17,7 @@
 .my-substitutions__spinner {
   font-size: 2rem;
   animation: spin 1s linear infinite;
-  color: #16a34a;
+  color: #e88413;
 }
 
 @keyframes spin {
@@ -110,8 +110,8 @@
 }
 
 .my-substitutions__card:hover {
-  border-color: #16a34a;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+  border-color: #e88413;
+  box-shadow: 0 4px 12px rgba(232, 132, 19, 0.15);
 }
 
 .my-substitutions__card-header {
@@ -131,7 +131,7 @@
 }
 
 .my-substitutions__diet-info svg {
-  color: #16a34a;
+  color: #e88413;
   font-size: 1.5rem;
 }
 
@@ -201,12 +201,12 @@
 }
 
 .my-substitutions__food-name--requested {
-  color: #16a34a;
+  color: #e88413;
 }
 
 .my-substitutions__arrow {
   font-size: 1.5rem;
-  color: #16a34a;
+  color: #e88413;
   font-weight: 600;
 }
 
@@ -214,7 +214,7 @@
   padding: 1rem;
   background: #f9fafb;
   border-radius: 12px;
-  border-left: 4px solid #16a34a;
+  border-left: 4px solid #e88413;
 }
 
 .my-substitutions__reason .my-substitutions__label {
@@ -245,7 +245,7 @@
 
 .my-substitutions__view-diet-button {
   padding: 0.5rem 1rem;
-  background: #16a34a;
+  background: #e88413;
   color: white;
   border: none;
   border-radius: 8px;
@@ -256,6 +256,6 @@
 }
 
 .my-substitutions__view-diet-button:hover {
-  background: #15803d;
+  background: #c96d0a;
 }
 

@@ -161,7 +161,7 @@ export const ClientDemographics: React.FC = () => {
           <h3 className="client-demographics__chart-title">
             Distribuição por Gênero
           </h3>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={250} minWidth={280}>
             <PieChart>
               <Pie
                 data={genderData}

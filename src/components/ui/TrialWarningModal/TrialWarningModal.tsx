@@ -100,7 +100,7 @@ export const TrialWarningModal: React.FC<TrialWarningModalProps> = ({ onClose })
         </h2>
         
         <p className="trial-warning-modal__message">
-          Para continuar usando todas as funcionalidades do NutriManager após o término do período de trial,
+          Para continuar usando todas as funcionalidades do Nutrize após o término do período de trial,
           é necessário assinar um plano.
         </p>
         

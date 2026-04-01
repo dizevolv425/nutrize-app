@@ -1,3 +1,11 @@
+:root {
+  --color-primary: #e88413;
+  --color-primary-dark: #c96d0a;
+  --color-primary-darker: #b05808;
+  --color-primary-light: #fff7ed;
+  --color-primary-focus: rgba(232, 132, 19, 0.1);
+}
+
 * {
   margin: 0;
   padding: 0;

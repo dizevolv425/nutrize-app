@@ -17,7 +17,7 @@
 .diet-calculator__spinner {
   animation: spin 1s linear infinite;
   font-size: 2rem;
-  color: #16a34a;
+  color: #e88413;
 }
 
 @keyframes spin {
@@ -51,7 +51,7 @@
 }
 
 .diet-calculator__title-icon {
-  color: #16a34a;
+  color: #e88413;
   font-size: 2rem;
 }
 
@@ -166,8 +166,8 @@
 .diet-calculator__input:focus,
 .diet-calculator__select:focus,
 .diet-calculator__textarea:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #e88413;
+  box-shadow: 0 0 0 3px rgba(232, 132, 19, 0.1);
 }
 
 .diet-calculator__textarea {
@@ -180,10 +180,10 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  background: #f0fdf4;
-  border: 2px solid #16a34a;
+  background: #fff7ed;
+  border: 2px solid #e88413;
   border-radius: 12px;
-  color: #15803d;
+  color: #c96d0a;
   font-weight: 500;
 }
 
@@ -191,21 +191,21 @@
   margin-left: auto;
   padding: 0.25rem 0.75rem;
   background: white;
-  border: 1px solid #16a34a;
+  border: 1px solid #e88413;
   border-radius: 8px;
-  color: #16a34a;
+  color: #e88413;
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .diet-calculator__client-clear:hover {
-  background: #16a34a;
+  background: #e88413;
   color: white;
 }
 
 .diet-calculator__summary {
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  background: linear-gradient(135deg, #e88413 0%, #c96d0a 100%);
   border-radius: 16px;
   padding: 2rem;
   margin-bottom: 2rem;

@@ -13,7 +13,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
 }) => {
   const { user } = useAuth();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 968);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Garantir que o modal apareça sempre ao fazer login/recarregar
@@ -34,13 +34,38 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     }
   }, [user]);
 
+  const isMobile = () => window.innerWidth < 968;
+
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    setIsSidebarOpen((prev) => !prev);
   };
+
+  const closeSidebarOnMobile = () => {
+    if (isMobile()) setIsSidebarOpen(false);
+  };
+
+  // Fechar sidebar ao redimensionar para mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 968) setIsSidebarOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className="dashboard-layout">
       <Sidebar isOpen={isSidebarOpen} />
+
+      {/* Backdrop mobile — fecha sidebar ao clicar fora */}
+      {isSidebarOpen && (
+        <div
+          className="dashboard-layout__backdrop"
+          onClick={closeSidebarOnMobile}
+          aria-hidden="true"
+        />
+      )}
+
       <div
         className={`dashboard-layout__content ${
           isSidebarOpen

@@ -85,13 +85,13 @@
   left: 50%;
   width: 0;
   height: 2px;
-  background: #16a34a;
+  background: #e88413;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateX(-50%);
 }
 
 .login-form__forgot-password:hover {
-  color: #16a34a;
+  color: #e88413;
 }
 
 .login-form__forgot-password:hover::after {
@@ -139,7 +139,7 @@
 }
 
 .login-form__submit-btn {
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+  background: linear-gradient(135deg, #e88413 0%, #c96d0a 100%) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative;
   overflow: hidden;
@@ -166,7 +166,7 @@
 }
 
 .login-form__submit-btn:hover {
-  background: linear-gradient(135deg, #15803d 0%, #166534 100%) !important;
+  background: linear-gradient(135deg, #c96d0a 0%, #b05808 100%) !important;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(31, 41, 55, 0.4);
 }
@@ -222,9 +222,9 @@
   display: inline-block;
   padding: 12px 28px;
   background: transparent;
-  color: #16a34a;
+  color: #e88413;
   text-decoration: none;
-  border: 2px solid #16a34a;
+  border: 2px solid #e88413;
   border-radius: 10px;
   font-weight: 600;
   font-size: 14px;
@@ -241,7 +241,7 @@
   left: 0;
   width: 0;
   height: 100%;
-  background: #16a34a;
+  background: #e88413;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: -1;
 }
