@@ -100,9 +100,9 @@ export const EngagementChart: React.FC = () => {
           <Line
             type="monotone"
             dataKey="Dietas Salvas"
-            stroke="#16a34a"
+            stroke="#e88413"
             strokeWidth={2}
-            dot={{ fill: "#16a34a", r: 4 }}
+            dot={{ fill: "#e88413", r: 4 }}
             activeDot={{ r: 6 }}
           />
         </LineChart>

@@ -59,7 +59,7 @@ const plans: Plan[] = [
     ],
     popular: true,
     icon: <FaStar />,
-    color: "#16a34a",
+    color: "#e88413",
   },
   {
     id: "enterprise",

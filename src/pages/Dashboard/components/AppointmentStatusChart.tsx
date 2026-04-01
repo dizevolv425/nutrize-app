@@ -47,7 +47,7 @@ export const AppointmentStatusChart: React.FC = () => {
           {
             name: "Concluídas",
             value: statusCount.completed,
-            color: "#16a34a",
+            color: "#e88413",
           },
           {
             name: "Canceladas",

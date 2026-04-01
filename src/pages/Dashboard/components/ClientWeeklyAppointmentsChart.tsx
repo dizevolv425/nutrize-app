@@ -96,7 +96,7 @@ export const ClientWeeklyAppointmentsChart: React.FC = () => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="consultas" fill="#16a34a" name="Consultas" radius={[8, 8, 0, 0]} />
+          <Bar dataKey="consultas" fill="#e88413" name="Consultas" radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

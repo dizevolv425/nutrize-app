@@ -129,7 +129,7 @@ export const DietCalculator: React.FC = () => {
 
   const getBMICategory = (bmi: number): { label: string; color: string } => {
     if (bmi < 18.5) return { label: "Abaixo do peso", color: "#3b82f6" };
-    if (bmi < 25) return { label: "Peso normal", color: "#16a34a" };
+    if (bmi < 25) return { label: "Peso normal", color: "#e88413" };
     if (bmi < 30) return { label: "Sobrepeso", color: "#f59e0b" };
     return { label: "Obesidade", color: "#ef4444" };
   };

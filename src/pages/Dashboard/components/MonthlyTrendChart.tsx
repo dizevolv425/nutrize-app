@@ -104,10 +104,10 @@ export const MonthlyTrendChart: React.FC = () => {
           <Line
             type="monotone"
             dataKey="consultas"
-            stroke="#16a34a"
+            stroke="#e88413"
             strokeWidth={3}
             name="Consultas"
-            dot={{ fill: "#16a34a", r: 5 }}
+            dot={{ fill: "#e88413", r: 5 }}
             activeDot={{ r: 7 }}
           />
         </LineChart>
