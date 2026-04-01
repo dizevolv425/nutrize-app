@@ -173,13 +173,13 @@
 }
 
 .services-manager__action-btn--edit {
-  color: #3b82f6;
+  color: #e88413;
 }
 
 .services-manager__action-btn--edit:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
-  color: #3b82f6;
+  border-color: #e88413;
+  background: #fff7ed;
+  color: #e88413;
 }
 
 .services-manager__action-btn--delete {

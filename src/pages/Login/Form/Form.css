@@ -277,9 +277,9 @@
   display: inline-block;
   padding: 10px 24px;
   background: transparent;
-  color: #3b82f6;
+  color: #e88413;
   text-decoration: none;
-  border: 1px solid #3b82f6;
+  border: 1px solid #e88413;
   border-radius: 8px;
   font-weight: 500;
   font-size: 13px;
@@ -287,7 +287,7 @@
 }
 
 .login-form__client-btn:hover {
-  background: #3b82f6;
+  background: #e88413;
   color: #ffffff;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);

@@ -17,7 +17,7 @@
   animation: spin 1s linear infinite;
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: #3b82f6;
+  color: #e88413;
 }
 
 @keyframes spin {
@@ -79,7 +79,7 @@
 }
 
 .financeiro__summary-card--balance {
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid #e88413;
 }
 
 .financeiro__summary-header {
@@ -228,15 +228,15 @@
 }
 
 .financeiro__filter-btn--active {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #e88413 0%, #c96d0a 100%);
   color: white;
-  border-color: #3b82f6;
+  border-color: #e88413;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .financeiro__filter-btn--active:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  border-color: #2563eb;
+  background: linear-gradient(135deg, #c96d0a 0%, #b05808 100%);
+  border-color: #c96d0a;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
@@ -269,7 +269,7 @@
 
 .financeiro__date-input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #e88413;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   background: white;
 }
@@ -573,13 +573,13 @@
 }
 
 .financeiro__transaction-btn--edit {
-  background: #eff6ff;
-  color: #3b82f6;
+  background: #fff7ed;
+  color: #e88413;
 }
 
 .financeiro__transaction-btn--edit:hover {
-  background: #dbeafe;
-  color: #2563eb;
+  background: #fde8c8;
+  color: #c96d0a;
 }
 
 .financeiro__transaction-btn--delete {

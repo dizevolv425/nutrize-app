@@ -43,7 +43,7 @@
 .master-stats-card--clickable:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  border: 2px solid #3b82f6;
+  border: 2px solid #e88413;
 }
 
 .master-stats-card--clickable:active {
@@ -139,7 +139,7 @@
   animation: spin 1s linear infinite;
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: #3b82f6;
+  color: #e88413;
 }
 
 @keyframes spin {

@@ -321,7 +321,7 @@
   gap: 0.5rem;
   background: transparent;
   border: none;
-  color: #3b82f6;
+  color: #e88413;
   cursor: pointer;
   padding: 0.375rem 0.75rem;
   border-radius: 6px;
@@ -331,8 +331,8 @@
 }
 
 .header__mark-all-read:hover {
-  background: #eff6ff;
-  color: #2563eb;
+  background: #fff7ed;
+  color: #c96d0a;
 }
 
 .header__dropdown-name {
@@ -414,7 +414,7 @@
 
 .notification-item--unread {
   background: #f0f9ff;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid #e88413;
 }
 
 .notification-item--unread:hover {
@@ -444,7 +444,7 @@
 }
 
 .notification-item--info {
-  border-left-color: #3b82f6;
+  border-left-color: #e88413;
 }
 
 .notification-item__icon {
@@ -473,7 +473,7 @@
 }
 
 .notification-item--info .notification-item__icon {
-  color: #3b82f6;
+  color: #e88413;
 }
 
 .notification-item__content {

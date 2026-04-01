@@ -67,12 +67,12 @@
 }
 
 .client-login-form__info {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border: 1px solid #bfdbfe;
+  background: linear-gradient(135deg, #fff7ed 0%, #fde8c8 100%);
+  border: 1px solid #fdba74;
   border-radius: 10px;
   padding: 12px 16px;
   margin-bottom: 16px;
-  color: #1e40af;
+  color: #92400e;
   font-size: 13px;
   line-height: 1.5;
 }
@@ -100,13 +100,13 @@
   left: 50%;
   width: 0;
   height: 2px;
-  background: #3b82f6;
+  background: #e88413;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateX(-50%);
 }
 
 .client-login-form__forgot-password:hover {
-  color: #3b82f6;
+  color: #e88413;
 }
 
 .client-login-form__forgot-password:hover::after {
@@ -149,7 +149,7 @@
 }
 
 .client-login-form__submit-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  background: linear-gradient(135deg, #e88413 0%, #c96d0a 100%) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative;
   overflow: hidden;
@@ -176,9 +176,9 @@
 }
 
 .client-login-form__submit-btn:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  background: linear-gradient(135deg, #c96d0a 0%, #b05808 100%) !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(31, 41, 55, 0.4);
+  box-shadow: 0 8px 24px rgba(232, 132, 19, 0.4);
 }
 
 .client-login-form__submit-btn:active {

@@ -61,7 +61,7 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #e88413 0%, #c96d0a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,8 +126,8 @@
 }
 
 .client-profile__radio:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  border-color: #e88413;
+  background: #fff7ed;
 }
 
 .client-profile__radio input[type="radio"] {
@@ -136,7 +136,7 @@
 }
 
 .client-profile__radio input[type="radio"]:checked + span {
-  color: #3b82f6;
+  color: #e88413;
   font-weight: 600;
 }
 
@@ -163,7 +163,7 @@
 }
 
 .client-profile__info-icon {
-  color: #3b82f6;
+  color: #e88413;
   flex-shrink: 0;
   margin-top: 0.25rem;
 }

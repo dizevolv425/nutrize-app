@@ -40,7 +40,7 @@
 }
 
 .toast--info {
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid #e88413;
 }
 
 .toast__icon {
@@ -66,7 +66,7 @@
 }
 
 .toast--info .toast__icon {
-  color: #3b82f6;
+  color: #e88413;
 }
 
 .toast__content {
@@ -131,7 +131,7 @@
 
 .toast__progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  background: linear-gradient(90deg, #e88413, #f6a44a);
   animation: toastProgress linear forwards;
   transform-origin: left;
 }
@@ -149,7 +149,7 @@
 }
 
 .toast--info .toast__progress-bar {
-  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  background: linear-gradient(90deg, #e88413, #f6a44a);
 }
 
 @keyframes toastProgress {

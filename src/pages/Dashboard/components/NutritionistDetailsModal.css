@@ -79,7 +79,7 @@
   animation: spin 1s linear infinite;
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: #3b82f6;
+  color: #e88413;
 }
 
 @keyframes spin {
@@ -165,8 +165,8 @@
 }
 
 .nutritionist-details-item__status--trial {
-  background: #dbeafe;
-  color: #1e40af;
+  background: #fde8c8;
+  color: #92400e;
 }
 
 .nutritionist-details-item__status--active {

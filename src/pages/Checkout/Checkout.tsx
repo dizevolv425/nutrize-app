@@ -37,7 +37,7 @@ const plans: Record<string, Plan> = {
     price: 49.9,
     period: "monthly",
     icon: <FaRocket />,
-    color: "#3b82f6",
+    color: "#e88413",
   },
   professional: {
     id: "professional",

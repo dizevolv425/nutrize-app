@@ -39,7 +39,7 @@ const plans: Plan[] = [
       "Suporte por email",
     ],
     icon: <FaRocket />,
-    color: "#3b82f6",
+    color: "#e88413",
   },
   {
     id: "professional",
