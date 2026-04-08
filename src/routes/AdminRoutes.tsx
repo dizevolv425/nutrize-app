@@ -5,35 +5,29 @@ import { useAuth } from "../hooks/useAuth";
 import { useTrial } from "../hooks/useTrial";
 import { TrialBlockModal } from "../components/ui/TrialBlockModal/TrialBlockModal";
 import type { ReactNode } from "react";
+import type { SecretaryModule } from "../types/user";
 
 interface AdminRoutesProps {
   children: ReactNode;
+  /** Se informado, secretárias com essa permissão também podem acessar a rota. */
+  module?: SecretaryModule;
 }
 
-export default function AdminRoutes({ children }: AdminRoutesProps) {
+export default function AdminRoutes({ children, module }: AdminRoutesProps) {
   const { user, loading } = useAuth();
   const { isExpired, shouldBlock } = useTrial();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Atualizar estado do modal quando o usuário mudar
-  // Verificar localStorage e sessionStorage para decidir se deve mostrar
   useEffect(() => {
-    if (user?.uid) {
+    if (user?.uid && (user.role === "admin" || user.role === "nutritionist")) {
       const dontShowKey = `trial-block-dont-show-${user.uid}`;
       const sessionDismissedKey = `trial-block-dismissed-${user.uid}`;
-      
-      // Não mostrar se o usuário optou por não mostrar mais (localStorage)
       const dontShowPermanently = localStorage.getItem(dontShowKey) === "true";
-      
-      // Não mostrar se já foi fechado nesta sessão (sessionStorage)
       const dismissedThisSession = sessionStorage.getItem(sessionDismissedKey) === "true";
-      
-      // Mostrar apenas se não foi dispensado permanentemente E não foi dispensado nesta sessão
       setIsModalOpen(!dontShowPermanently && !dismissedThisSession);
     }
-  }, [user?.uid]);
+  }, [user?.uid, user?.role]);
 
-  // Mostrar tela de carregamento enquanto verifica autenticação
   if (loading) {
     return (
       <div
@@ -50,25 +44,35 @@ export default function AdminRoutes({ children }: AdminRoutesProps) {
     );
   }
 
-  // Verificar se o usuário está autenticado
   if (!user) {
     return <Navigate to={paths.login} replace />;
   }
 
-  // Verificar se o usuário é admin ou nutricionista
-  // AdminRoutes é usado para rotas que requerem permissões de nutricionista
-  if (user.role !== "admin" && user.role !== "nutritionist") {
+  const isAdminOrNutritionist =
+    user.role === "admin" || user.role === "nutritionist";
+  const isSecretary = user.role === "secretary";
+
+  // Negar acesso a qualquer outro role
+  if (!isAdminOrNutritionist && !isSecretary) {
     return <Navigate to={paths.dashboard} replace />;
   }
 
-  // Verificar se o trial expirou - redirecionar para página de trial expirado
+  // Lógica para secretária: verificar permissão de módulo
+  if (isSecretary) {
+    // Se a rota não especifica módulo, secretária não tem acesso
+    if (!module) return <Navigate to={paths.dashboard} replace />;
+    // Se não tem a permissão do módulo, redirecionar
+    if (!user.permissions?.includes(module))
+      return <Navigate to={paths.dashboard} replace />;
+    // Secretária tem acesso — sem verificação de trial
+    return <>{children}</>;
+  }
+
+  // Admin / Nutricionista: verificações de trial
   if (isExpired) {
     return <Navigate to={paths.trialExpired} replace />;
   }
 
-  // Bloquear funcionalidades durante trial - mostrar modal de bloqueio
-  // O modal pode ser fechado para permitir exploração, mas funcionalidades críticas devem ser bloqueadas
-  // O modal sempre aparece ao fazer login/recarregar, exceto se o usuário optou por não mostrar mais
   if (shouldBlock) {
     return (
       <>

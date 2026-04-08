@@ -32,6 +32,7 @@ import { MySubstitutions } from "../pages/Diet/MySubstitutions";
 import { FoodManagement } from "../pages/Food/FoodManagement";
 import { NotificationTest } from "../pages/NotificationTest/NotificationTest";
 import { Profile } from "../pages/Profile/Profile";
+import { SecretaryManagement } from "../pages/Settings/SecretaryManagement";
 import { NotificationProvider } from "../contexts/NotificationContext";
 import { ToastContainer } from "../components/ui/Toast/ToastContainer";
 
@@ -62,11 +63,11 @@ export default function AppRoutes() {
               </ProtectedRoutes>
             }
           />
-          {/* Rotas apenas para Admin */}
+          {/* Rotas para Admin, Nutricionista e Secretária (com permissão de módulo) */}
           <Route
             path={paths.clientes}
             element={
-              <AdminRoutes>
+              <AdminRoutes module="clients">
                 <DashboardLayout>
                   <ClientList />
                 </DashboardLayout>
@@ -76,7 +77,7 @@ export default function AppRoutes() {
           <Route
             path={paths.clientesNew}
             element={
-              <AdminRoutes>
+              <AdminRoutes module="clients">
                 <DashboardLayout>
                   <ClientForm />
                 </DashboardLayout>
@@ -86,7 +87,7 @@ export default function AppRoutes() {
           <Route
             path={paths.clientesProfile}
             element={
-              <AdminRoutes>
+              <AdminRoutes module="clients">
                 <DashboardLayout>
                   <ClientProfile />
                 </DashboardLayout>
@@ -96,7 +97,7 @@ export default function AppRoutes() {
           <Route
             path={paths.agenda}
             element={
-              <AdminRoutes>
+              <AdminRoutes module="agenda">
                 <DashboardLayout>
                   <Agenda />
                 </DashboardLayout>
@@ -133,11 +134,10 @@ export default function AppRoutes() {
               </ProtectedRoutes>
             }
           />
-          {/* Rotas apenas para Admin */}
           <Route
             path={paths.financeiro}
             element={
-              <AdminRoutes>
+              <AdminRoutes module="financial">
                 <DashboardLayout>
                   <Financeiro />
                 </DashboardLayout>
@@ -256,6 +256,17 @@ export default function AppRoutes() {
                   <Profile />
                 </DashboardLayout>
               </ProtectedRoutes>
+            }
+          />
+          {/* Gerenciamento de secretária — apenas nutricionista/admin */}
+          <Route
+            path={paths.secretaryManagement}
+            element={
+              <AdminRoutes>
+                <DashboardLayout>
+                  <SecretaryManagement />
+                </DashboardLayout>
+              </AdminRoutes>
             }
           />
           {/* Rota de teste de notificações */}

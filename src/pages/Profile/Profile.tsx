@@ -27,6 +27,8 @@ export const Profile: React.FC = () => {
         return "Administrador";
       case "nutritionist":
         return "Nutricionista";
+      case "secretary":
+        return "Secretária";
       case "user":
         return "Paciente";
       default:

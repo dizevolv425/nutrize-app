@@ -35,4 +35,6 @@ export const paths = {
   perfil: "/dashboard/perfil",
   // Rota de teste
   notificationTest: "/dashboard/teste-notificacoes",
+  // Configurações — gerenciamento de secretária
+  secretaryManagement: "/dashboard/configuracoes/secretaria",
 };

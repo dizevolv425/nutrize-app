@@ -8,6 +8,7 @@ import {
   FaChartLine,
   FaUtensils,
   FaExchangeAlt,
+  FaCog,
 } from "react-icons/fa";
 import { useAuth } from "../../../hooks/useAuth";
 import logoColorido from "../../../assets/logo-colorido.png";
@@ -30,6 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const isNutritionist = user?.role === "nutritionist";
+  const isSecretary = user?.role === "secretary";
   const isAdminOrNutritionist = isAdmin || isNutritionist;
 
   // Menu para admin e nutricionista
@@ -69,6 +71,48 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       label: "Gerenciar Alimentos",
       adminOnly: true,
     },
+    {
+      path: "/dashboard/configuracoes/secretaria",
+      icon: <FaCog size={20} />,
+      label: "Secretária",
+      adminOnly: true,
+    },
+  ];
+
+  // Menu para secretária — filtrado pelas permissões dela
+  const secretaryMenuItems: MenuItem[] = [
+    {
+      path: "/dashboard",
+      icon: <FaHome size={20} />,
+      label: "Home",
+    },
+    ...(user?.permissions?.includes("clients")
+      ? [
+          {
+            path: "/dashboard/clientes",
+            icon: <FaUsers size={20} />,
+            label: "Pacientes",
+          } as MenuItem,
+        ]
+      : []),
+    ...(user?.permissions?.includes("agenda")
+      ? [
+          {
+            path: "/dashboard/agenda",
+            icon: <FaCalendarAlt size={20} />,
+            label: "Agenda",
+          } as MenuItem,
+        ]
+      : []),
+    ...(user?.permissions?.includes("financial")
+      ? [
+          {
+            path: "/dashboard/financeiro",
+            icon: <FaChartLine size={20} />,
+            label: "Financeiro",
+          } as MenuItem,
+        ]
+      : []),
   ];
 
   // Menu para usuário (cliente)
@@ -100,8 +144,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     },
   ];
 
-  // Filtrar menu baseado no role
-  const menuItems = isAdminOrNutritionist ? adminMenuItems : userMenuItems;
+  // Selecionar menu conforme role
+  const menuItems = isAdminOrNutritionist
+    ? adminMenuItems
+    : isSecretary
+    ? secretaryMenuItems
+    : userMenuItems;
 
   return (
     <aside
