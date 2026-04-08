@@ -1,200 +1,191 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FaCheck,
-  FaCreditCard,
-  FaCrown,
-  FaRocket,
-  FaStar,
-} from "react-icons/fa";
+import { FaCheck, FaTimes, FaCreditCard, FaCrown, FaRocket, FaStar } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import { paths } from "../../routes/paths";
 import "./Subscription.css";
 
-interface Plan {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  period: "monthly" | "yearly";
-  features: string[];
-  popular?: boolean;
-  icon: React.ReactNode;
-  color: string;
+type PlanId = "starter" | "plus" | "advanced";
+type Period = "monthly" | "yearly";
+
+interface PlanFeature {
+  label: string;
+  starter: boolean;
+  plus: boolean;
+  advanced: boolean;
 }
 
-const plans: Plan[] = [
+interface PlanConfig {
+  id: PlanId;
+  name: string;
+  description: string;
+  monthlyPrice: number;
+  yearlyTotal: number;
+  yearlyMonthly: number; // preço mensal equivalente no plano anual
+  popular?: boolean;
+  icon: React.ReactNode;
+}
+
+const PLANS: PlanConfig[] = [
   {
-    id: "basic",
-    name: "Básico",
+    id: "starter",
+    name: "Starter",
     description: "Ideal para começar",
-    price: 49.9,
-    period: "monthly",
-    features: [
-      "Até 50 clientes",
-      "Agendamento de consultas",
-      "Criação de dietas",
-      "Base de alimentos TACO",
-      "Dashboard básico",
-      "Suporte por email",
-    ],
+    monthlyPrice: 69.9,
+    yearlyTotal: 671.0,
+    yearlyMonthly: 55.92,
     icon: <FaRocket />,
-    color: "#e88413",
   },
   {
-    id: "professional",
-    name: "Profissional",
-    description: "Para nutricionistas estabelecidos",
-    price: 99.9,
-    period: "monthly",
-    features: [
-      "Clientes ilimitados",
-      "Agendamento de consultas",
-      "Criação de dietas",
-      "Base de alimentos TACO",
-      "Dashboard completo",
-      "Módulo financeiro",
-      "Relatórios avançados",
-      "Suporte prioritário",
-    ],
+    id: "plus",
+    name: "Plus",
+    description: "Para nutricionistas em crescimento",
+    monthlyPrice: 99.9,
+    yearlyTotal: 959.04,
+    yearlyMonthly: 79.92,
     popular: true,
     icon: <FaStar />,
-    color: "#e88413",
   },
   {
-    id: "enterprise",
-    name: "Enterprise",
+    id: "advanced",
+    name: "Advanced",
     description: "Para clínicas e equipes",
-    price: 199.9,
-    period: "monthly",
-    features: [
-      "Clientes ilimitados",
-      "Múltiplos nutricionistas",
-      "Agendamento de consultas",
-      "Criação de dietas",
-      "Base de alimentos TACO",
-      "Dashboard completo",
-      "Módulo financeiro avançado",
-      "Relatórios personalizados",
-      "API de integração",
-      "Suporte dedicado 24/7",
-    ],
+    monthlyPrice: 169.9,
+    yearlyTotal: 1535.04,
+    yearlyMonthly: 127.92,
     icon: <FaCrown />,
-    color: "#f59e0b",
   },
 ];
 
+const FEATURES: PlanFeature[] = [
+  { label: "Até 30 pacientes",         starter: true,  plus: false, advanced: false },
+  { label: "Pacientes ilimitados",      starter: false, plus: true,  advanced: true  },
+  { label: "Agendamento de consultas",  starter: true,  plus: true,  advanced: true  },
+  { label: "Criação de dietas",         starter: true,  plus: true,  advanced: true  },
+  { label: "Base de alimentos completa",starter: true,  plus: true,  advanced: true  },
+  { label: "Usuário secretaria",        starter: false, plus: true,  advanced: true  },
+  { label: "2 nutricionistas na conta", starter: false, plus: false, advanced: true  },
+];
+
+function fmt(value: number): string {
+  return value.toFixed(2).replace(".", ",");
+}
+
+function yearlySavings(plan: PlanConfig): number {
+  return plan.monthlyPrice * 12 - plan.yearlyTotal;
+}
+
 export const Subscription: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedPeriod, setSelectedPeriod] = useState<"monthly" | "yearly">(
-    "monthly"
-  );
+  const [period, setPeriod] = useState<Period>("monthly");
 
-  const handleSelectPlan = (planId: string) => {
-    // Redirecionar para página de checkout com o plano selecionado
-    navigate(`${paths.checkout}?plan=${planId}&period=${selectedPeriod}`);
-  };
-
-  const getYearlyPrice = (monthlyPrice: number) => {
-    // 20% de desconto no plano anual
-    return monthlyPrice * 12 * 0.8;
+  const handleSelectPlan = (planId: PlanId) => {
+    navigate(`${paths.checkout}?plan=${planId}&period=${period}`);
   };
 
   return (
     <div className="subscription-page">
       <div className="subscription-page__container">
+
+        {/* Header */}
         <div className="subscription-page__header">
           <h1 className="subscription-page__title">Escolha seu Plano</h1>
           <p className="subscription-page__subtitle">
-            Selecione o plano ideal para o seu negócio
+            Selecione o plano ideal para o seu negócio e comece a usar hoje mesmo.
           </p>
 
+          {/* Toggle Mensal / Anual */}
           <div className="subscription-page__period-toggle">
             <button
-              className={`period-toggle__button ${
-                selectedPeriod === "monthly" ? "active" : ""
-              }`}
-              onClick={() => setSelectedPeriod("monthly")}
+              className={`period-toggle__button ${period === "monthly" ? "active" : ""}`}
+              onClick={() => setPeriod("monthly")}
             >
               Mensal
             </button>
             <button
-              className={`period-toggle__button ${
-                selectedPeriod === "yearly" ? "active" : ""
-              }`}
-              onClick={() => setSelectedPeriod("yearly")}
+              className={`period-toggle__button ${period === "yearly" ? "active" : ""}`}
+              onClick={() => setPeriod("yearly")}
             >
               Anual
-              <span className="period-toggle__badge">Economize 20%</span>
+              <span className="period-toggle__badge">Economize até 20%</span>
             </button>
           </div>
         </div>
 
+        {/* Cards de planos */}
         <div className="subscription-page__plans">
-          {plans.map((plan) => (
-            <div
-              key={plan.id}
-              className={`plan-card ${plan.popular ? "plan-card--popular" : ""}`}
-            >
-              {plan.popular && (
-                <div className="plan-card__badge">Mais Popular</div>
-              )}
-              <div className="plan-card__header">
-                <div
-                  className="plan-card__icon"
-                  style={{ backgroundColor: `${plan.color}15`, color: plan.color }}
-                >
-                  {plan.icon}
-                </div>
-                <h3 className="plan-card__name">{plan.name}</h3>
-                <p className="plan-card__description">{plan.description}</p>
-              </div>
+          {PLANS.map((plan) => {
+            const displayPrice =
+              period === "monthly" ? plan.monthlyPrice : plan.yearlyMonthly;
+            const savings = yearlySavings(plan);
 
-              <div className="plan-card__price">
-                <span className="plan-card__currency">R$</span>
-                <span className="plan-card__amount">
-                  {selectedPeriod === "monthly"
-                    ? plan.price.toFixed(2).replace(".", ",")
-                    : getYearlyPrice(plan.price)
-                        .toFixed(2)
-                        .replace(".", ",")}
-                </span>
-                <span className="plan-card__period">
-                  /{selectedPeriod === "monthly" ? "mês" : "ano"}
-                </span>
-              </div>
-
-              {selectedPeriod === "yearly" && (
-                <div className="plan-card__savings">
-                  <FaCheck /> Economize R${" "}
-                  {(plan.price * 12 - getYearlyPrice(plan.price))
-                    .toFixed(2)
-                    .replace(".", ",")}{" "}
-                  por ano
-                </div>
-              )}
-
-              <ul className="plan-card__features">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="plan-card__feature">
-                    <FaCheck className="plan-card__feature-icon" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Button
-                variant={plan.popular ? "primary" : "secondary"}
-                fullWidth
-                onClick={() => handleSelectPlan(plan.id)}
-                className="plan-card__button"
+            return (
+              <div
+                key={plan.id}
+                className={`plan-card ${plan.popular ? "plan-card--popular" : ""}`}
               >
-                <FaCreditCard /> Assinar Agora
-              </Button>
-            </div>
-          ))}
+                {plan.popular && (
+                  <div className="plan-card__badge">Mais Popular</div>
+                )}
+
+                <div className="plan-card__header">
+                  <div className="plan-card__icon">{plan.icon}</div>
+                  <h3 className="plan-card__name">{plan.name}</h3>
+                  <p className="plan-card__description">{plan.description}</p>
+                </div>
+
+                <div className="plan-card__price">
+                  <div className="plan-card__price-main">
+                    <span className="plan-card__currency">R$</span>
+                    <span className="plan-card__amount">{fmt(displayPrice)}</span>
+                    <span className="plan-card__period">/mês</span>
+                  </div>
+                  {period === "yearly" && (
+                    <div className="plan-card__price-note">
+                      cobrado R$ {fmt(plan.yearlyTotal)}/ano
+                    </div>
+                  )}
+                </div>
+
+                {period === "yearly" && (
+                  <div className="plan-card__savings">
+                    <FaCheck /> Economize R$ {fmt(savings)} por ano
+                  </div>
+                )}
+
+                <ul className="plan-card__features">
+                  {FEATURES.map((feature) => {
+                    const included = feature[plan.id];
+                    return (
+                      <li
+                        key={feature.label}
+                        className={`plan-card__feature ${!included ? "plan-card__feature--excluded" : ""}`}
+                      >
+                        {included ? (
+                          <FaCheck className="plan-card__feature-icon plan-card__feature-icon--check" />
+                        ) : (
+                          <FaTimes className="plan-card__feature-icon plan-card__feature-icon--times" />
+                        )}
+                        <span>{feature.label}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+
+                <Button
+                  variant={plan.popular ? "primary" : "secondary"}
+                  fullWidth
+                  onClick={() => handleSelectPlan(plan.id)}
+                  className="plan-card__button"
+                >
+                  <FaCreditCard /> Assinar Agora
+                </Button>
+              </div>
+            );
+          })}
         </div>
 
+        {/* Footer */}
         <div className="subscription-page__footer">
           <Button
             variant="ghost"
@@ -208,4 +199,3 @@ export const Subscription: React.FC = () => {
     </div>
   );
 };
-

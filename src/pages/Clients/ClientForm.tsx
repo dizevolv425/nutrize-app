@@ -1,19 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaInfoCircle, FaSave, FaSpinner } from "react-icons/fa";
+import { FaArrowLeft, FaInfoCircle, FaSave, FaSpinner, FaLock } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import InputField from "../../components/ui/InputField/InputField";
-import { createClient } from "../../services/clientService";
+import { createClient, getClientsByNutritionist } from "../../services/clientService";
 import { useAuth } from "../../hooks/useAuth";
 import { maskPhone } from "../../utils/masks";
 import type { CreateClientData } from "../../types/client";
 import "./ClientForm.css";
+
+const STARTER_CLIENT_LIMIT = 30;
 
 export const ClientForm: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clientCount, setClientCount] = useState<number | null>(null);
+
+  // Verificar contagem de pacientes para o limite do plano Starter
+  useEffect(() => {
+    if (!user?.uid || user.plan !== "starter") return;
+    getClientsByNutritionist(user.uid)
+      .then((list) => setClientCount(list.length))
+      .catch(() => setClientCount(null));
+  }, [user?.uid, user?.plan]);
+
+  const isStarterLimitReached =
+    user?.plan === "starter" &&
+    clientCount !== null &&
+    clientCount >= STARTER_CLIENT_LIMIT;
   const [formData, setFormData] = useState<CreateClientData>({
     firstName: "",
     lastName: "",
@@ -76,6 +92,10 @@ export const ClientForm: React.FC = () => {
       setError("Usuário não autenticado");
       return;
     }
+    if (isStarterLimitReached) {
+      setError(`Plano Starter: limite de ${STARTER_CLIENT_LIMIT} pacientes atingido. Faça upgrade para continuar.`);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -107,6 +127,18 @@ export const ClientForm: React.FC = () => {
           <p className="client-form__subtitle">Preencha os campos abaixo para cadastrar um novo paciente.</p>
         </div>
       </div>
+
+      {isStarterLimitReached && (
+        <div className="client-form__limit-banner">
+          <FaLock />
+          <span>
+            Você atingiu o limite de <strong>{STARTER_CLIENT_LIMIT} pacientes</strong> do
+            plano Starter.{" "}
+            <a href="/assinatura">Faça upgrade para o plano Plus</a> para cadastrar pacientes
+            ilimitados.
+          </span>
+        </div>
+      )}
 
       <div className="client-form__container">
         <form onSubmit={handleSubmit} className="client-form__form">

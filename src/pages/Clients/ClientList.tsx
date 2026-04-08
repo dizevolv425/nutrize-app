@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaPlus, FaSpinner, FaUserFriends, FaFileImport } from "react-icons/fa";
+import { FaPlus, FaSpinner, FaUserFriends, FaFileImport, FaLock } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import { SearchBar } from "./components/SearchBar";
 import { ClientCard } from "./components/ClientCard";
@@ -9,6 +9,8 @@ import { getClientsByNutritionist } from "../../services/clientService";
 import { useAuth } from "../../hooks/useAuth";
 import type { Client } from "../../types/client";
 import "./ClientList.css";
+
+const STARTER_CLIENT_LIMIT = 30;
 
 export const ClientList: React.FC = () => {
   const navigate = useNavigate();
@@ -19,6 +21,9 @@ export const ClientList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [importModalOpen, setImportModalOpen] = useState(false);
+
+  const isStarterLimitReached =
+    user?.plan === "starter" && clients.length >= STARTER_CLIENT_LIMIT;
 
   const loadClients = useCallback(async () => {
     if (!user?.uid) return;
@@ -88,6 +93,7 @@ export const ClientList: React.FC = () => {
             variant="secondary"
             onClick={() => setImportModalOpen(true)}
             className="client-list__add-button"
+            disabled={isStarterLimitReached}
           >
             <FaFileImport /> Importar em lote
           </Button>
@@ -95,11 +101,25 @@ export const ClientList: React.FC = () => {
             variant="primary"
             onClick={handleAddNewClient}
             className="client-list__add-button"
+            disabled={isStarterLimitReached}
           >
-            <FaPlus /> Adicionar Novo Cliente
+            {isStarterLimitReached ? <FaLock /> : <FaPlus />}{" "}
+            Adicionar Novo Cliente
           </Button>
         </div>
       </div>
+
+      {isStarterLimitReached && (
+        <div className="client-list__plan-limit-banner">
+          <FaLock />
+          <span>
+            Você atingiu o limite de <strong>{STARTER_CLIENT_LIMIT} pacientes</strong> do
+            plano Starter.{" "}
+            <a href="/assinatura">Faça upgrade para o plano Plus</a> para ter pacientes
+            ilimitados.
+          </span>
+        </div>
+      )}
 
       <div className="client-list__search">
         <SearchBar
