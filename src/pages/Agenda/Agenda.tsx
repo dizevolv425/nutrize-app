@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Calendar, momentLocalizer, type View } from "react-big-calendar";
 import withDragAndDrop, { type EventInteractionArgs } from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
@@ -43,6 +44,7 @@ type TabType = "agenda" | "requests";
 
 export const Agenda: React.FC = () => {
   const { user, reloadUser } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,6 +116,19 @@ export const Agenda: React.FC = () => {
   useEffect(() => {
     convertAppointmentsToEvents();
   }, [convertAppointmentsToEvents]);
+
+  // Abrir modal automaticamente se vier com ?appointment={id}
+  useEffect(() => {
+    const appointmentId = searchParams.get("appointment");
+    if (!appointmentId || appointments.length === 0) return;
+    const found = appointments.find((a) => a.id === appointmentId);
+    if (found) {
+      setSelectedAppointment(found);
+      setSelectedDate(undefined);
+      setIsModalOpen(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, appointments, setSearchParams]);
 
   const handleSelectSlot = ({ start }: { start: Date; end: Date }) => {
     setSelectedAppointment(null);

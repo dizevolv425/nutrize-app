@@ -10,28 +10,26 @@ import {
 } from "recharts";
 import { useAuth } from "../../../hooks/useAuth";
 import { getAppointmentsByNutritionist } from "../../../services/appointmentService";
+import { getOrCreateSchedule, getMinMaxWorkingHours } from "../../../services/scheduleService";
+import type { NutritionistSchedule } from "../../../types/schedule";
 import "./OccupancyChart.css";
 
 interface OccupancyChartProps {
   period: "day" | "week" | "month";
 }
 
-// Horários de trabalho padrão (8h às 18h)
-const WORK_HOURS = [
-  "08:00",
-  "09:00",
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-  "18:00",
-];
-
 const SLOTS_PER_HOUR = 2; // 2 slots de 30min por hora
+
+const buildWorkHours = (schedule: NutritionistSchedule | null): string[] => {
+  const { minHour, maxHour } = schedule
+    ? getMinMaxWorkingHours(schedule)
+    : { minHour: 8, maxHour: 18 };
+  const hours: string[] = [];
+  for (let h = minHour; h <= maxHour; h++) {
+    hours.push(`${String(h).padStart(2, "0")}:00`);
+  }
+  return hours;
+};
 
 export const OccupancyChart: React.FC<OccupancyChartProps> = ({ period }) => {
   const { user } = useAuth();
@@ -51,6 +49,7 @@ export const OccupancyChart: React.FC<OccupancyChartProps> = ({ period }) => {
 
       try {
         setLoading(true);
+        const scheduleData = await getOrCreateSchedule(user.uid).catch(() => null);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -86,6 +85,8 @@ export const OccupancyChart: React.FC<OccupancyChartProps> = ({ period }) => {
         const scheduledAppointments = appointments.filter(
           (apt) => apt.status === "scheduled" || apt.status === "completed"
         );
+
+        const WORK_HOURS = buildWorkHours(scheduleData);
 
         let chartData: Array<{ time: string; ocupacao: number }> = [];
         let totalScheduled = 0;
@@ -175,7 +176,7 @@ export const OccupancyChart: React.FC<OccupancyChartProps> = ({ period }) => {
               return aptDate >= week.start && aptDate <= week.end;
             });
 
-            // Calcular total de slots da semana (7 dias * horas * slots)
+            // Calcular total de slots da semana (dias úteis * horas * slots)
             const weekSlots = 7 * WORK_HOURS.length * SLOTS_PER_HOUR;
             const ocupacao =
               weekSlots > 0

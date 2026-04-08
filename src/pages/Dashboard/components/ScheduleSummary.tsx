@@ -144,7 +144,7 @@ export const ScheduleSummary: React.FC = () => {
       ) : (
         <div className="schedule-summary__list">
           {appointments.map((appointment) => (
-            <div key={appointment.id} className="schedule-summary__appointment" onClick={() => navigate("/dashboard/agenda")} style={{ cursor: "pointer" }}>
+            <div key={appointment.id} className="schedule-summary__appointment" onClick={() => navigate(`/dashboard/agenda?appointment=${appointment.id}`)} style={{ cursor: "pointer" }}>
               <div className="schedule-summary__appointment-header">
                 <div className="schedule-summary__appointment-time">
                   <FaClock size={14} color="#667eea" />

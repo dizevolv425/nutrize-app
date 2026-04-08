@@ -1064,7 +1064,7 @@ export const ClientProfile: React.FC = () => {
                         </span>
                       </div>
                       <div className="client-profile__diet-nutrition-item">
-                        <span className="client-profile__diet-nutrition-label">Gorduras</span>
+                        <span className="client-profile__diet-nutrition-label">Lipídeos</span>
                         <span className="client-profile__diet-nutrition-value">
                           {totals.fat.toFixed(1)}g
                         </span>

@@ -7,6 +7,7 @@ import {
   FaTrash,
   FaSave,
   FaTimes,
+  FaDatabase,
 } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import {
@@ -15,6 +16,7 @@ import {
   updateFood,
   deleteFood,
 } from "../../services/foodService";
+import tacoFoods from "../../data/taco-foods-complete.json";
 import type { Food } from "../../types/food";
 import "./FoodManagement.css";
 
@@ -26,6 +28,8 @@ export const FoodManagement: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [editingFood, setEditingFood] = useState<Food | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [tacoConfirmOpen, setTacoConfirmOpen] = useState(false);
+  const [tacoImporting, setTacoImporting] = useState(false);
   const [formData, setFormData] = useState<Partial<Food>>({
     name: "",
     category: "",
@@ -36,7 +40,6 @@ export const FoodManagement: React.FC = () => {
     fiber: 0,
     unit: "gramas",
     unitWeight: undefined,
-    allowedMeals: [],
   });
 
   const loadFoods = useCallback(async () => {
@@ -89,7 +92,6 @@ export const FoodManagement: React.FC = () => {
       fiber: 0,
       unit: "gramas",
       unitWeight: undefined,
-      allowedMeals: [],
     });
   };
 
@@ -106,7 +108,6 @@ export const FoodManagement: React.FC = () => {
       fiber: food.fiber || 0,
       unit: food.unit,
       unitWeight: food.unitWeight,
-      allowedMeals: food.allowedMeals || [],
     });
   };
 
@@ -123,7 +124,6 @@ export const FoodManagement: React.FC = () => {
       fiber: 0,
       unit: "gramas",
       unitWeight: undefined,
-      allowedMeals: [],
     });
   };
 
@@ -147,7 +147,6 @@ export const FoodManagement: React.FC = () => {
           fiber: formData.fiber,
           unit: formData.unit || "gramas",
           unitWeight: formData.unitWeight,
-          allowedMeals: formData.allowedMeals,
         } as Omit<Food, "id" | "createdAt" | "updatedAt">);
       } else if (editingFood) {
         await updateFood(editingFood.id, {
@@ -160,7 +159,6 @@ export const FoodManagement: React.FC = () => {
           fiber: formData.fiber,
           unit: formData.unit || "gramas",
           unitWeight: formData.unitWeight,
-          allowedMeals: formData.allowedMeals,
         });
       }
 
@@ -186,12 +184,22 @@ export const FoodManagement: React.FC = () => {
     }
   };
 
-  const toggleAllowedMeal = (meal: "cafe-manha" | "almoco" | "lanche" | "jantar") => {
-    const current = formData.allowedMeals || [];
-    const updated = current.includes(meal)
-      ? current.filter((m) => m !== meal)
-      : [...current, meal];
-    setFormData({ ...formData, allowedMeals: updated });
+  const handleRestoreTaco = async () => {
+    try {
+      setTacoImporting(true);
+      setError(null);
+      const foods = (tacoFoods as { foods: Omit<Food, "id" | "createdAt" | "updatedAt">[] }).foods;
+      for (const food of foods) {
+        await createFood(food);
+      }
+      await loadFoods();
+      setTacoConfirmOpen(false);
+    } catch (err: any) {
+      console.error("Erro ao importar base TACO:", err);
+      setError(err.message || "Erro ao importar base TACO");
+    } finally {
+      setTacoImporting(false);
+    }
   };
 
   if (loading) {
@@ -212,9 +220,14 @@ export const FoodManagement: React.FC = () => {
             Adicione, edite ou remova alimentos da base de dados
           </p>
         </div>
-        <Button variant="primary" onClick={handleCreate}>
-          <FaPlus /> Adicionar Alimento
-        </Button>
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          <Button variant="secondary" onClick={() => setTacoConfirmOpen(true)}>
+            <FaDatabase /> Restaurar base TACO
+          </Button>
+          <Button variant="primary" onClick={handleCreate}>
+            <FaPlus /> Adicionar Alimento
+          </Button>
+        </div>
       </div>
 
       <div className="food-management__search">
@@ -366,24 +379,6 @@ export const FoodManagement: React.FC = () => {
                 />
               </div>
 
-              <div className="food-management__form-field food-management__form-field--full">
-                <label>Refeições Permitidas</label>
-                <div className="food-management__meals-checkboxes">
-                  {(["cafe-manha", "almoco", "lanche", "jantar"] as const).map((meal) => (
-                    <label key={meal} className="food-management__checkbox-label">
-                      <input
-                        type="checkbox"
-                        checked={formData.allowedMeals?.includes(meal) || false}
-                        onChange={() => toggleAllowedMeal(meal)}
-                      />
-                      {meal === "cafe-manha" && "Café da Manhã"}
-                      {meal === "almoco" && "Almoço"}
-                      {meal === "lanche" && "Lanche"}
-                      {meal === "jantar" && "Jantar"}
-                    </label>
-                  ))}
-                </div>
-              </div>
             </div>
 
             <div className="food-management__form-actions">
@@ -446,6 +441,29 @@ export const FoodManagement: React.FC = () => {
       {filteredFoods.length === 0 && !loading && (
         <div className="food-management__empty">
           <p>Nenhum alimento encontrado</p>
+        </div>
+      )}
+
+      {tacoConfirmOpen && (
+        <div className="food-management__modal-overlay">
+          <div className="food-management__modal">
+            <h2 className="food-management__modal-title">Restaurar Base TACO</h2>
+            <p className="food-management__modal-text">
+              Isso irá importar <strong>{(tacoFoods as { totalFoods: number }).totalFoods} alimentos</strong> da Tabela Brasileira de Composição de Alimentos (TACO/UNICAMP) para a base de dados.
+              Os alimentos já existentes não serão removidos.
+            </p>
+            <p className="food-management__modal-text food-management__modal-text--warning">
+              A operação pode demorar alguns minutos.
+            </p>
+            <div className="food-management__modal-actions">
+              <Button variant="secondary" onClick={() => setTacoConfirmOpen(false)} disabled={tacoImporting}>
+                Cancelar
+              </Button>
+              <Button variant="primary" onClick={handleRestoreTaco} disabled={tacoImporting}>
+                {tacoImporting ? <><FaSpinner className="food-management__spinner" /> Importando...</> : <><FaDatabase /> Confirmar Importação</>}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

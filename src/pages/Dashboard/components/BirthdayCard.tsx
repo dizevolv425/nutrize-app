@@ -35,7 +35,7 @@ export const BirthdayCard: React.FC = () => {
           clients
             .filter((client) => {
               if (!client.birthDate) return false;
-              const birthDate = new Date(client.birthDate);
+              const birthDate = new Date(client.birthDate + "T00:00:00");
               return (
                 birthDate.getMonth() + 1 === todayMonth &&
                 birthDate.getDate() === todayDay
@@ -71,7 +71,7 @@ export const BirthdayCard: React.FC = () => {
               }
 
               // Calcular idade
-              const birthDate = new Date(client.birthDate);
+              const birthDate = new Date(client.birthDate + "T00:00:00");
               const age = today.getFullYear() - birthDate.getFullYear();
               const monthDiff = today.getMonth() - birthDate.getMonth();
               const dayDiff = today.getDate() - birthDate.getDate();
