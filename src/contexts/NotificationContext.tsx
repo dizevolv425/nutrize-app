@@ -3,9 +3,12 @@ import type { ReactNode } from "react";
 
 export type NotificationType = "success" | "error" | "warning" | "info";
 
+export type NotificationCategory = "appointment_request" | "general";
+
 export type Notification = {
   id: string;
   type: NotificationType;
+  category?: NotificationCategory;
   title: string;
   message?: string;
   duration?: number;
@@ -76,7 +79,9 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     setNotifications([]);
   }, []);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter(
+    (n) => !n.read && n.category === "appointment_request"
+  ).length;
 
   // Métodos de conveniência
   const success = useCallback(

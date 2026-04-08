@@ -10,7 +10,7 @@ import type {
 // Por padrão, o serviço está desabilitado até que seja configurado
 let emailConfig: EmailServiceConfig = {
   enabled: false,
-  fromEmail: "noreply@nutrimanager.com",
+  fromEmail: "noreply@nutrize.com.br",
   fromName: "Nutrize",
 };
 

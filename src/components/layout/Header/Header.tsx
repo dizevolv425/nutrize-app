@@ -28,6 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   const { user, logOut } = useAuth();
   const navigate = useNavigate();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const bellNotifications = notifications.filter((n) => n.category === "appointment_request");
   const { isTrial, daysRemaining, isExpired } = useTrial();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -206,14 +207,14 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
               <div className="header__dropdown-content">
-                {notifications.length === 0 ? (
+                {bellNotifications.length === 0 ? (
                   <div className="notification-item notification-item--empty">
                     <p className="notification-item__text">
-                      Nenhuma notificação
+                      Nenhuma solicitação de agendamento
                     </p>
                   </div>
                 ) : (
-                  notifications.slice(0, 10).map((notification) => (
+                  bellNotifications.slice(0, 10).map((notification) => (
                     <div
                       key={notification.id}
                       className={`notification-item ${!notification.read ? "notification-item--unread" : ""} notification-item--${notification.type}`}

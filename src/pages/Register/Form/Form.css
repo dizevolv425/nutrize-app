@@ -201,7 +201,7 @@
 }
 
 .login-form__submit-btn {
-  background: linear-gradient(135deg, #14532d 0%, #064e3b 100%) !important;
+  background: linear-gradient(135deg, var(--color-primary, #e88413) 0%, #c96d0a 100%) !important;
   margin-top: 20px;
   width: 50%;
   align-self: center;
