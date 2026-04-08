@@ -938,7 +938,37 @@
 }
 
 .client-profile__consultation-header {
-  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+  padding-bottom: 0.5rem;
+}
+
+.client-profile__consultation-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.client-profile__consultation-edit-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.client-profile__consultation-edit-row > div {
+  flex: 1;
+  min-width: 120px;
+}
+
+.client-profile__measurements-source {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+  font-style: italic;
 }
 
 .client-profile__consultation-date {

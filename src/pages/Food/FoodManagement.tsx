@@ -343,7 +343,7 @@ export const FoodManagement: React.FC = () => {
               </div>
 
               <div className="food-management__form-field">
-                <label>Gorduras (por 100g)</label>
+                <label>Lipídeos (por 100g)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -404,7 +404,7 @@ export const FoodManagement: React.FC = () => {
               <th>Calorias</th>
               <th>Proteínas</th>
               <th>Carboidratos</th>
-              <th>Gorduras</th>
+              <th>Lipídeos</th>
               <th>Unidade</th>
               <th>Ações</th>
             </tr>

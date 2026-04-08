@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Calendar, momentLocalizer, type View } from "react-big-calendar";
+import withDragAndDrop, { type EventInteractionArgs } from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { FaPlus, FaSpinner, FaClock } from "react-icons/fa";
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import { FaPlus, FaSpinner, FaCog } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import { AppointmentModal } from "./components/AppointmentModal";
 import { EditScheduleModal } from "./components/EditScheduleModal";
 import { AppointmentRequestsList } from "./components/AppointmentRequestsList";
 import { getAppointmentsByNutritionist } from "../../services/appointmentService";
-import { getOrCreateSchedule, getMinMaxWorkingHours } from "../../services/scheduleService";
+import { getOrCreateSchedule, getMinMaxWorkingHours, isTimeSlotAvailable } from "../../services/scheduleService";
+import { updateAppointment } from "../../services/appointmentService";
 import { useAuth } from "../../hooks/useAuth";
 import type { Appointment, CalendarEvent } from "../../types/appointment";
 import type { NutritionistSchedule } from "../../types/schedule";
@@ -18,6 +21,7 @@ import "./Agenda.css";
 // Configurar locale para português
 moment.locale("pt-br");
 const localizer = momentLocalizer(moment);
+const DnDCalendar = withDragAndDrop<CalendarEvent>(Calendar);
 
 const messages = {
   allDay: "Dia inteiro",
@@ -163,36 +167,66 @@ export const Agenda: React.FC = () => {
     await loadSchedule();
   };
 
+  const slotPropGetter = useCallback((date: Date) => {
+    if (!schedule) return {};
+    const weekday = date.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6;
+    const timeStr = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+    const available = isTimeSlotAvailable(schedule, weekday, timeStr);
+    return available ? {} : { style: { backgroundColor: "#f5f5f5", cursor: "not-allowed" } };
+  }, [schedule]);
+
+  const handleEventDrop = useCallback(async ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {
+    try {
+      const s = start instanceof Date ? start : new Date(start);
+      const e = end instanceof Date ? end : new Date(end);
+      const newDate = new Date(s.getFullYear(), s.getMonth(), s.getDate());
+      const startTime = `${String(s.getHours()).padStart(2, "0")}:${String(s.getMinutes()).padStart(2, "0")}`;
+      const endTime = `${String(e.getHours()).padStart(2, "0")}:${String(e.getMinutes()).padStart(2, "0")}`;
+      await updateAppointment(event.id, { date: newDate, startTime, endTime });
+      loadAppointments();
+    } catch (err) {
+      console.error("Erro ao mover agendamento:", err);
+    }
+  }, [loadAppointments]);
+
+  const handleEventResize = useCallback(async ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {
+    try {
+      const s = start instanceof Date ? start : new Date(start);
+      const e = end instanceof Date ? end : new Date(end);
+      const startTime = `${String(s.getHours()).padStart(2, "0")}:${String(s.getMinutes()).padStart(2, "0")}`;
+      const endTime = `${String(e.getHours()).padStart(2, "0")}:${String(e.getMinutes()).padStart(2, "0")}`;
+      await updateAppointment(event.id, { startTime, endTime });
+      loadAppointments();
+    } catch (err) {
+      console.error("Erro ao redimensionar agendamento:", err);
+    }
+  }, [loadAppointments]);
+
   const eventStyleGetter = (event: CalendarEvent) => {
     const appointment = event.resource;
-    let backgroundColor = "#667eea";
 
     switch (appointment.status) {
+      case "pending":
+        return {
+          style: {
+            backgroundColor: "rgba(232, 132, 19, 0.35)",
+            borderRadius: "8px",
+            color: "#92400e",
+            border: "1px dashed #e88413",
+            display: "block",
+            fontWeight: "500",
+            fontSize: "0.875rem",
+          },
+        };
       case "completed":
-        backgroundColor = "#10b981";
-        break;
+        return { style: { backgroundColor: "#10b981", borderRadius: "8px", opacity: 0.9, color: "white", border: "none", display: "block", fontWeight: "500", fontSize: "0.875rem" } };
       case "cancelled":
-        backgroundColor = "#ef4444";
-        break;
+        return { style: { backgroundColor: "#ef4444", borderRadius: "8px", opacity: 0.9, color: "white", border: "none", display: "block", fontWeight: "500", fontSize: "0.875rem" } };
       case "no-show":
-        backgroundColor = "#f59e0b";
-        break;
+        return { style: { backgroundColor: "#f59e0b", borderRadius: "8px", opacity: 0.9, color: "white", border: "none", display: "block", fontWeight: "500", fontSize: "0.875rem" } };
       default:
-        backgroundColor = "#667eea";
+        return { style: { backgroundColor: "#e88413", borderRadius: "8px", opacity: 0.9, color: "white", border: "none", display: "block", fontWeight: "500", fontSize: "0.875rem" } };
     }
-
-    return {
-      style: {
-        backgroundColor,
-        borderRadius: "8px",
-        opacity: 0.9,
-        color: "white",
-        border: "none",
-        display: "block",
-        fontWeight: "500",
-        fontSize: "0.875rem",
-      },
-    };
   };
 
   if (loading) {
@@ -206,7 +240,7 @@ export const Agenda: React.FC = () => {
 
   const renderCalendar = (isSplitView: boolean = false) => (
     <div className={`agenda__calendar-wrapper ${isSplitView ? "agenda__calendar-wrapper--split" : ""}`}>
-      <Calendar
+      <DnDCalendar
         localizer={localizer}
         events={events}
         startAccessor="start"
@@ -221,9 +255,13 @@ export const Agenda: React.FC = () => {
         selectable
         popup
         eventPropGetter={eventStyleGetter}
-        style={{ 
-          height: isSplitView ? "calc(100vh - 300px)" : "calc(100vh - 250px)", 
-          minHeight: isSplitView ? "400px" : "600px" 
+        slotPropGetter={slotPropGetter}
+        onEventDrop={handleEventDrop}
+        onEventResize={handleEventResize}
+        resizable
+        style={{
+          height: isSplitView ? "calc(100vh - 300px)" : "calc(100vh - 250px)",
+          minHeight: isSplitView ? "400px" : "600px"
         }}
         views={["month", "week", "day", "agenda"]}
         step={30}
@@ -275,7 +313,7 @@ export const Agenda: React.FC = () => {
             onClick={handleEditSchedule}
             className="agenda__schedule-button"
           >
-            <FaClock /> Editar Horários
+            <FaCog /> Configurações da agenda
           </Button>
           <Button
             variant="primary"
@@ -326,31 +364,23 @@ export const Agenda: React.FC = () => {
             <h3 className="agenda__legend-title">Legenda:</h3>
             <div className="agenda__legend-items">
               <div className="agenda__legend-item">
-                <span
-                  className="agenda__legend-color"
-                  style={{ backgroundColor: "#667eea" }}
-                ></span>
+                <span className="agenda__legend-color" style={{ backgroundColor: "#e88413" }}></span>
                 <span>Agendado</span>
               </div>
               <div className="agenda__legend-item">
-                <span
-                  className="agenda__legend-color"
-                  style={{ backgroundColor: "#10b981" }}
-                ></span>
+                <span className="agenda__legend-color" style={{ backgroundColor: "rgba(232, 132, 19, 0.35)", border: "1px dashed #e88413" }}></span>
+                <span>Solicitação pendente</span>
+              </div>
+              <div className="agenda__legend-item">
+                <span className="agenda__legend-color" style={{ backgroundColor: "#10b981" }}></span>
                 <span>Concluído</span>
               </div>
               <div className="agenda__legend-item">
-                <span
-                  className="agenda__legend-color"
-                  style={{ backgroundColor: "#ef4444" }}
-                ></span>
+                <span className="agenda__legend-color" style={{ backgroundColor: "#ef4444" }}></span>
                 <span>Cancelado</span>
               </div>
               <div className="agenda__legend-item">
-                <span
-                  className="agenda__legend-color"
-                  style={{ backgroundColor: "#f59e0b" }}
-                ></span>
+                <span className="agenda__legend-color" style={{ backgroundColor: "#f59e0b" }}></span>
                 <span>Faltou</span>
               </div>
             </div>

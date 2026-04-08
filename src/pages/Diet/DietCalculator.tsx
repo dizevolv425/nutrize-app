@@ -7,6 +7,7 @@ import {
   FaExclamationTriangle,
   FaCalculator,
   FaUser,
+  FaPlus,
 } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import { MealSection } from "./components/MealSection";
@@ -75,11 +76,21 @@ export const DietCalculator: React.FC = () => {
   }, [user]);
 
   const handleMealUpdate = (updatedMeal: Meal) => {
-    setMeals((prevMeals) =>
-      prevMeals.map((meal) =>
-        meal.id === updatedMeal.id ? updatedMeal : meal
-      )
-    );
+    setMeals((prev) => prev.map((m) => (m.id === updatedMeal.id ? updatedMeal : m)));
+  };
+
+  const handleMealDelete = (mealId: string) => {
+    if (!confirm("Deseja excluir esta refeição?")) return;
+    setMeals((prev) => prev.filter((m) => m.id !== mealId));
+  };
+
+  const handleMealRename = (mealId: string, newName: string) => {
+    setMeals((prev) => prev.map((m) => (m.id === mealId ? { ...m, name: newName } : m)));
+  };
+
+  const handleAddMeal = () => {
+    const newId = String(Date.now());
+    setMeals((prev) => [...prev, { id: newId, name: "Nova Refeição", foods: [] }]);
   };
 
   const calculateTotalNutrition = () => {
@@ -367,7 +378,7 @@ export const DietCalculator: React.FC = () => {
             </span>
           </div>
           <div className="diet-calculator__summary-item">
-            <span className="diet-calculator__summary-label">Gorduras</span>
+            <span className="diet-calculator__summary-label">Lipídeos</span>
             <span className="diet-calculator__summary-value">
               {totals.fat.toFixed(1)}g
             </span>
@@ -378,8 +389,17 @@ export const DietCalculator: React.FC = () => {
       {/* Seções de Refeições */}
       <div className="diet-calculator__meals">
         {meals.map((meal) => (
-          <MealSection key={meal.id} meal={meal} onUpdate={handleMealUpdate} />
+          <MealSection
+            key={meal.id}
+            meal={meal}
+            onUpdate={handleMealUpdate}
+            onDelete={() => handleMealDelete(meal.id)}
+            onRename={(name) => handleMealRename(meal.id, name)}
+          />
         ))}
+        <button className="diet-calculator__add-meal" onClick={handleAddMeal} type="button">
+          <FaPlus /> Adicionar Refeição
+        </button>
       </div>
 
       {/* Botão Salvar */}

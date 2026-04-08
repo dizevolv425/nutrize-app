@@ -210,6 +210,9 @@
   padding: 2rem;
   margin-bottom: 2rem;
   color: white;
+  position: sticky;
+  top: 72px;
+  z-index: 10;
 }
 
 .diet-calculator__summary-title {
@@ -288,3 +291,26 @@
   }
 }
 
+
+.diet-calculator__add-meal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem;
+  border: 2px dashed #d1d5db;
+  border-radius: 16px;
+  background: none;
+  color: #9ca3af;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.diet-calculator__add-meal:hover {
+  border-color: #e88413;
+  color: #e88413;
+  background: #fff7ed;
+}

@@ -136,6 +136,23 @@
   }
 }
 
+.expense-modal__label--toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.expense-modal__checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #e88413;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .expense-modal__content {
     max-width: 100%;

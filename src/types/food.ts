@@ -23,7 +23,7 @@ export interface MealFood {
 
 export interface Meal {
   id: string;
-  name: "cafe-manha" | "almoco" | "lanche" | "jantar";
+  name: string;
   foods: MealFood[];
 }
 

@@ -1,10 +1,12 @@
 export interface Client {
   id: string;
+  firstName?: string;
+  lastName?: string;
   fullName: string;
   email: string;
   phone: string;
   birthDate: string;
-  gender: "masculino" | "feminino" | "outro";
+  gender?: "masculino" | "feminino" | "outro";
   height?: number; // altura em cm
   weight?: number; // peso em kg
   createdAt: Date;
@@ -31,14 +33,14 @@ export interface ClientDocument {
 }
 
 export interface CreateClientData {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   birthDate: string;
-  gender: "masculino" | "feminino" | "outro";
+  gender?: "masculino" | "feminino" | "outro";
   height?: number; // altura em cm
   weight?: number; // peso em kg
-  password: string; // senha definida pelo nutricionista
 }
 
 // Histórico de Consultas

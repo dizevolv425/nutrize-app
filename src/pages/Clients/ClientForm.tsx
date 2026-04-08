@@ -5,6 +5,7 @@ import { Button } from "../../components/ui/Button/Button";
 import InputField from "../../components/ui/InputField/InputField";
 import { createClient } from "../../services/clientService";
 import { useAuth } from "../../hooks/useAuth";
+import { maskPhone } from "../../utils/masks";
 import type { CreateClientData } from "../../types/client";
 import "./ClientForm.css";
 
@@ -14,33 +15,38 @@ export const ClientForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CreateClientData>({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     birthDate: "",
-    gender: "feminino",
+    gender: undefined,
     height: undefined,
     weight: undefined,
-    password: "",
   });
 
-  const [formErrors, setFormErrors] = useState<Partial<CreateClientData>>({});
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof CreateClientData, string>>>({});
 
   const handleInputChange = (field: keyof CreateClientData, value: string | number | undefined) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    let processed: string | number | undefined = value;
+    if (field === "phone" && typeof value === "string") {
+      processed = maskPhone(value);
+    }
+    setFormData((prev) => ({ ...prev, [field]: processed }));
     if (formErrors[field]) {
       setFormErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
   const validateForm = (): boolean => {
-    const errors: Partial<CreateClientData> = {};
+    const errors: Partial<Record<keyof CreateClientData, string>> = {};
 
-    if (!formData.fullName.trim()) {
-      errors.fullName = "Nome completo é obrigatório";
+    if (!formData.firstName.trim()) {
+      errors.firstName = "Nome é obrigatório";
+    }
+
+    if (!formData.lastName.trim()) {
+      errors.lastName = "Sobrenome é obrigatório";
     }
 
     if (!formData.email.trim()) {
@@ -51,16 +57,12 @@ export const ClientForm: React.FC = () => {
 
     if (!formData.phone.trim()) {
       errors.phone = "Telefone é obrigatório";
+    } else if (formData.phone.replace(/\D/g, "").length < 10) {
+      errors.phone = "Telefone inválido";
     }
 
     if (!formData.birthDate) {
       errors.birthDate = "Data de nascimento é obrigatória";
-    }
-
-    if (!formData.password) {
-      errors.password = "Senha é obrigatória";
-    } else if (formData.password.length < 6) {
-      errors.password = "Senha deve ter pelo menos 6 caracteres";
     }
 
     setFormErrors(errors);
@@ -69,28 +71,20 @@ export const ClientForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
-
     if (!user?.uid) {
-      setError("Usuario não autenticado");
+      setError("Usuário não autenticado");
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
-
       await createClient(formData, user.uid);
       navigate("/dashboard/clientes");
     } catch (err: unknown) {
       console.error("Erro ao criar cliente:", err);
-      if (
-        err &&
-        typeof err === "object" &&
-        "code" in err &&
-        err.code === "auth/email-already-in-use"
-      ) {
+      if (err && typeof err === "object" && "code" in err && err.code === "auth/email-already-in-use") {
         setError("E-mail já está em uso");
       } else {
         setError("Erro ao criar cliente");
@@ -100,25 +94,17 @@ export const ClientForm: React.FC = () => {
     }
   };
 
-  const handleCancel = () => {
-    navigate("/dashboard/clientes");
-  };
+  const handleCancel = () => navigate("/dashboard/clientes");
 
   return (
     <div className="client-form">
       <div className="client-form__header">
-        <Button
-          variant="ghost"
-          onClick={handleCancel}
-          className="client-form__back-button"
-        >
+        <Button variant="ghost" onClick={handleCancel} className="client-form__back-button">
           <FaArrowLeft /> Voltar
         </Button>
         <div>
-          <h1 className="client-form__title">Novo Cliente</h1>
-          <p className="client-form__subtitle">
-            Preencha os campos abaixo para criar um novo cliente.
-          </p>
+          <h1 className="client-form__title">Novo Paciente</h1>
+          <p className="client-form__subtitle">Preencha os campos abaixo para cadastrar um novo paciente.</p>
         </div>
       </div>
 
@@ -133,16 +119,29 @@ export const ClientForm: React.FC = () => {
           <div className="client-form__section">
             <h2 className="client-form__section-title">Informações Pessoais</h2>
 
-            <InputField
-              label="Nome Completo"
-              type="text"
-              value={formData.fullName}
-              onChange={(value) => handleInputChange("fullName", value)}
-              placeholder="Ex: João da Silva"
-              error={formErrors.fullName}
-              required
-              disabled={loading}
-            />
+            <div className="client-form__row">
+              <InputField
+                label="Nome"
+                type="text"
+                value={formData.firstName}
+                onChange={(value) => handleInputChange("firstName", value)}
+                placeholder="Ex: João"
+                error={formErrors.firstName}
+                required
+                disabled={loading}
+              />
+
+              <InputField
+                label="Sobrenome"
+                type="text"
+                value={formData.lastName}
+                onChange={(value) => handleInputChange("lastName", value)}
+                placeholder="Ex: da Silva"
+                error={formErrors.lastName}
+                required
+                disabled={loading}
+              />
+            </div>
 
             <InputField
               label="E-mail"
@@ -178,9 +177,7 @@ export const ClientForm: React.FC = () => {
               />
 
               <div className="client-form__gender">
-                <label className="client-form__label">
-                  Sexo <span className="client-form__required">*</span>
-                </label>
+                <label className="client-form__label">Sexo</label>
                 <div className="client-form__gender-options">
                   <label className="client-form__radio">
                     <input
@@ -188,37 +185,29 @@ export const ClientForm: React.FC = () => {
                       name="gender"
                       value="feminino"
                       checked={formData.gender === "feminino"}
-                      onChange={(e) =>
-                        handleInputChange("gender", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("gender", e.target.value)}
                       disabled={loading}
                     />
                     <span>Feminino</span>
                   </label>
-
                   <label className="client-form__radio">
                     <input
                       type="radio"
                       name="gender"
                       value="masculino"
                       checked={formData.gender === "masculino"}
-                      onChange={(e) =>
-                        handleInputChange("gender", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("gender", e.target.value)}
                       disabled={loading}
                     />
                     <span>Masculino</span>
                   </label>
-
                   <label className="client-form__radio">
                     <input
                       type="radio"
                       name="gender"
                       value="outro"
                       checked={formData.gender === "outro"}
-                      onChange={(e) =>
-                        handleInputChange("gender", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("gender", e.target.value)}
                       disabled={loading}
                     />
                     <span>Outro</span>
@@ -232,72 +221,41 @@ export const ClientForm: React.FC = () => {
                 label="Altura (cm)"
                 type="number"
                 value={formData.height?.toString() || ""}
-                onChange={(value) =>
-                  handleInputChange("height", value ? parseFloat(value) : undefined)
-                }
+                onChange={(value) => handleInputChange("height", value ? parseFloat(value) : undefined)}
                 placeholder="Ex: 175"
                 disabled={loading}
                 min={0}
                 step={0.1}
               />
-
               <InputField
                 label="Peso (kg)"
                 type="number"
                 value={formData.weight?.toString() || ""}
-                onChange={(value) =>
-                  handleInputChange("weight", value ? parseFloat(value) : undefined)
-                }
+                onChange={(value) => handleInputChange("weight", value ? parseFloat(value) : undefined)}
                 placeholder="Ex: 70.5"
                 disabled={loading}
                 min={0}
                 step={0.1}
               />
             </div>
-
-            <div className="client-form__section">
-              <h2 className="client-form__section-title">Acesso do Cliente</h2>
-
-              <InputField
-                label="Senha"
-                type="password"
-                value={formData.password}
-                onChange={(value) => handleInputChange("password", value)}
-                placeholder="Digite a senha para o cliente"
-                error={formErrors.password}
-                required
-                disabled={loading}
-              />
-            </div>
           </div>
 
           <div className="client-form__info">
             <p>
-              <FaInfoCircle size={16} /> Ao cadastrar, uma conta de acesso será
-              automaticamente criada para o cliente com o e-mail e senha fornecidos.
-              O cliente poderá usar essas credenciais para fazer login no sistema.
+              <FaInfoCircle size={16} /> A senha de acesso do paciente será gerada automaticamente com os{" "}
+              <strong>4 últimos dígitos do telefone</strong> cadastrado.
             </p>
           </div>
 
           <div className="client-form__actions">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleCancel}
-              disabled={loading}
-            >
+            <Button type="button" variant="secondary" onClick={handleCancel} disabled={loading}>
               Cancelar
             </Button>
             <Button type="submit" variant="primary" disabled={loading}>
               {loading ? (
-                <>
-                  <FaSpinner size={16} className="client-form__spinner" />{" "}
-                  Cadastrando...
-                </>
+                <><FaSpinner size={16} className="client-form__spinner" /> Cadastrando...</>
               ) : (
-                <>
-                  <FaSave /> Cadastrar Cliente
-                </>
+                <><FaSave /> Cadastrar Paciente</>
               )}
             </Button>
           </div>

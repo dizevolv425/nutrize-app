@@ -182,3 +182,75 @@
   min-width: 30px;
 }
 
+
+.meal-section__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.meal-section__title-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.meal-section__icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 0.8rem;
+  padding: 0.25rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.meal-section__icon-btn:hover {
+  color: #e88413;
+  background: #fff7ed;
+}
+
+.meal-section__icon-btn--danger:hover {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+.meal-section__rename {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.meal-section__rename-input {
+  border: 1px solid #e88413;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  outline: none;
+  min-width: 0;
+  flex: 1;
+}
+
+.meal-section__rename-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+}
+
+.meal-section__rename-btn--confirm {
+  color: #e88413;
+}
+
+.meal-section__rename-btn--cancel {
+  color: #6b7280;
+}

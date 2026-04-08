@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { FaTimes, FaSave, FaSpinner } from "react-icons/fa";
 import { Button } from "../../../components/ui/Button/Button";
-import InputField from "../../../components/ui/InputField/InputField";
 import { createClient } from "../../../services/clientService";
 import { useAuth } from "../../../hooks/useAuth";
+import { maskPhone } from "../../../utils/masks";
 import type { Client, CreateClientData } from "../../../types/client";
 import "./QuickClientForm.css";
 
@@ -23,36 +23,37 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CreateClientData>({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     birthDate: "",
     gender: "feminino",
     height: undefined,
     weight: undefined,
-    password: "",
   });
 
-  const [formErrors, setFormErrors] = useState<Partial<CreateClientData>>({});
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof CreateClientData, string>>>({});
 
   const handleInputChange = (
     field: keyof CreateClientData,
     value: string | number | undefined
   ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    let processed: string | number | undefined = value;
+    if (field === "phone" && typeof value === "string") {
+      processed = maskPhone(value);
+    }
+    setFormData((prev) => ({ ...prev, [field]: processed }));
     if (formErrors[field]) {
       setFormErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
   const validateForm = (): boolean => {
-    const errors: Partial<CreateClientData> = {};
+    const errors: Partial<Record<keyof CreateClientData, string>> = {};
 
-    if (!formData.fullName.trim()) {
-      errors.fullName = "Nome completo é obrigatório";
+    if (!formData.firstName.trim()) {
+      errors.firstName = "Nome é obrigatório";
     }
 
     if (!formData.email.trim()) {
@@ -63,16 +64,12 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
 
     if (!formData.phone.trim()) {
       errors.phone = "Telefone é obrigatório";
+    } else if (formData.phone.replace(/\D/g, "").length < 10) {
+      errors.phone = "Telefone inválido";
     }
 
     if (!formData.birthDate) {
       errors.birthDate = "Data de nascimento é obrigatória";
-    }
-
-    if (!formData.password) {
-      errors.password = "Senha é obrigatória";
-    } else if (formData.password.length < 6) {
-      errors.password = "Senha deve ter pelo menos 6 caracteres";
     }
 
     setFormErrors(errors);
@@ -81,9 +78,7 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
-
     if (!user?.uid) {
       setError("Usuário não autenticado");
       return;
@@ -94,10 +89,10 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
       setError(null);
 
       const clientId = await createClient(formData, user.uid);
-      
-      // Buscar o cliente recém-criado para retornar os dados completos
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
       const newClient: Client = {
         id: clientId,
+        fullName,
         ...formData,
         nutritionistId: user.uid,
         createdAt: new Date(),
@@ -125,14 +120,14 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
 
   const handleCancel = () => {
     setFormData({
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       phone: "",
       birthDate: "",
       gender: "feminino",
       height: undefined,
       weight: undefined,
-      password: "",
     });
     setFormErrors({});
     setError(null);
@@ -143,12 +138,9 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
 
   return (
     <div className="quick-client-form-overlay" onClick={handleCancel}>
-      <div
-        className="quick-client-form"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="quick-client-form" onClick={(e) => e.stopPropagation()}>
         <div className="quick-client-form__header">
-          <h3 className="quick-client-form__title">Cadastro Rápido de Cliente</h3>
+          <h3 className="quick-client-form__title">Cadastro Rápido de Paciente</h3>
           <button
             className="quick-client-form__close"
             onClick={handleCancel}
@@ -168,30 +160,40 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
 
           <div className="quick-client-form__info">
             <p>
-              Preencha os dados essenciais do cliente. Você poderá adicionar mais
-              informações posteriormente.
+              Preencha os dados essenciais do paciente. A senha de acesso será gerada automaticamente
+              com os <strong>4 últimos dígitos do telefone</strong>.
             </p>
           </div>
 
-          <div className="quick-client-form__field">
-            <label className="quick-client-form__label">
-              Nome Completo <span className="quick-client-form__required">*</span>
-            </label>
-            <input
-              type="text"
-              className={`quick-client-form__input ${
-                formErrors.fullName ? "quick-client-form__input--error" : ""
-              }`}
-              value={formData.fullName}
-              onChange={(e) => handleInputChange("fullName", e.target.value)}
-              placeholder="Ex: João da Silva"
-              disabled={loading}
-            />
-            {formErrors.fullName && (
-              <span className="quick-client-form__error-text">
-                {formErrors.fullName}
-              </span>
-            )}
+          <div className="quick-client-form__row">
+            <div className="quick-client-form__field">
+              <label className="quick-client-form__label">
+                Nome <span className="quick-client-form__required">*</span>
+              </label>
+              <input
+                type="text"
+                className={`quick-client-form__input ${formErrors.firstName ? "quick-client-form__input--error" : ""}`}
+                value={formData.firstName}
+                onChange={(e) => handleInputChange("firstName", e.target.value)}
+                placeholder="Ex: João"
+                disabled={loading}
+              />
+              {formErrors.firstName && (
+                <span className="quick-client-form__error-text">{formErrors.firstName}</span>
+              )}
+            </div>
+
+            <div className="quick-client-form__field">
+              <label className="quick-client-form__label">Sobrenome</label>
+              <input
+                type="text"
+                className="quick-client-form__input"
+                value={formData.lastName}
+                onChange={(e) => handleInputChange("lastName", e.target.value)}
+                placeholder="Ex: da Silva"
+                disabled={loading}
+              />
+            </div>
           </div>
 
           <div className="quick-client-form__field">
@@ -200,18 +202,14 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
             </label>
             <input
               type="email"
-              className={`quick-client-form__input ${
-                formErrors.email ? "quick-client-form__input--error" : ""
-              }`}
+              className={`quick-client-form__input ${formErrors.email ? "quick-client-form__input--error" : ""}`}
               value={formData.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
               placeholder="exemplo@email.com"
               disabled={loading}
             />
             {formErrors.email && (
-              <span className="quick-client-form__error-text">
-                {formErrors.email}
-              </span>
+              <span className="quick-client-form__error-text">{formErrors.email}</span>
             )}
           </div>
 
@@ -221,58 +219,45 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
             </label>
             <input
               type="tel"
-              className={`quick-client-form__input ${
-                formErrors.phone ? "quick-client-form__input--error" : ""
-              }`}
+              className={`quick-client-form__input ${formErrors.phone ? "quick-client-form__input--error" : ""}`}
               value={formData.phone}
               onChange={(e) => handleInputChange("phone", e.target.value)}
               placeholder="(11) 99999-9999"
               disabled={loading}
             />
             {formErrors.phone && (
-              <span className="quick-client-form__error-text">
-                {formErrors.phone}
-              </span>
+              <span className="quick-client-form__error-text">{formErrors.phone}</span>
             )}
           </div>
 
           <div className="quick-client-form__row">
             <div className="quick-client-form__field">
               <label className="quick-client-form__label">
-                Data de Nascimento{" "}
-                <span className="quick-client-form__required">*</span>
+                Data de Nascimento <span className="quick-client-form__required">*</span>
               </label>
               <input
                 type="date"
-                className={`quick-client-form__input ${
-                  formErrors.birthDate ? "quick-client-form__input--error" : ""
-                }`}
+                className={`quick-client-form__input ${formErrors.birthDate ? "quick-client-form__input--error" : ""}`}
                 value={formData.birthDate}
                 onChange={(e) => handleInputChange("birthDate", e.target.value)}
                 disabled={loading}
               />
               {formErrors.birthDate && (
-                <span className="quick-client-form__error-text">
-                  {formErrors.birthDate}
-                </span>
+                <span className="quick-client-form__error-text">{formErrors.birthDate}</span>
               )}
             </div>
 
             <div className="quick-client-form__field">
-              <label className="quick-client-form__label">
-                Sexo <span className="quick-client-form__required">*</span>
-              </label>
+              <label className="quick-client-form__label">Sexo</label>
               <select
                 className="quick-client-form__input"
-                value={formData.gender}
+                value={formData.gender || ""}
                 onChange={(e) =>
-                  handleInputChange(
-                    "gender",
-                    e.target.value as "masculino" | "feminino" | "outro"
-                  )
+                  handleInputChange("gender", e.target.value as "masculino" | "feminino" | "outro")
                 }
                 disabled={loading}
               >
+                <option value="">Selecionar...</option>
                 <option value="feminino">Feminino</option>
                 <option value="masculino">Masculino</option>
                 <option value="outro">Outro</option>
@@ -280,38 +265,15 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
             </div>
           </div>
 
-          <div className="quick-client-form__field">
-            <InputField
-              label="Senha"
-              type="password"
-              value={formData.password}
-              onChange={(value) => handleInputChange("password", value)}
-              placeholder="Digite a senha para o cliente"
-              error={formErrors.password}
-              required
-              disabled={loading}
-            />
-          </div>
-
           <div className="quick-client-form__actions">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleCancel}
-              disabled={loading}
-            >
+            <Button type="button" variant="secondary" onClick={handleCancel} disabled={loading}>
               Cancelar
             </Button>
             <Button type="submit" variant="primary" disabled={loading}>
               {loading ? (
-                <>
-                  <FaSpinner className="quick-client-form__spinner" />{" "}
-                  Cadastrando...
-                </>
+                <><FaSpinner className="quick-client-form__spinner" /> Cadastrando...</>
               ) : (
-                <>
-                  <FaSave /> Cadastrar
-                </>
+                <><FaSave /> Cadastrar</>
               )}
             </Button>
           </div>

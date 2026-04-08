@@ -26,6 +26,10 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
     description: "",
     date: new Date().toISOString().split("T")[0],
     category: "",
+    paymentStatus: "paid" as "paid" | "pending",
+    isRecurring: false,
+    recurrenceFrequency: "monthly" as "weekly" | "monthly",
+    recurrenceEndDate: "",
   });
 
   useEffect(() => {
@@ -35,6 +39,10 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
         description: transaction.description,
         date: transaction.date.toISOString().split("T")[0],
         category: transaction.category || "",
+        paymentStatus: transaction.paymentStatus || "paid",
+        isRecurring: transaction.isRecurring || false,
+        recurrenceFrequency: transaction.recurrenceFrequency || "monthly",
+        recurrenceEndDate: "",
       });
     }
   }, [transaction]);
@@ -65,8 +73,9 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
         await updateTransaction(transaction.id, {
           amount,
           description: formData.description.trim(),
-          date: new Date(formData.date),
+          date: new Date(formData.date + "T00:00:00"),
           category: formData.category.trim() || undefined,
+          paymentStatus: formData.paymentStatus,
         });
       } else {
         // Criar nova despesa
@@ -74,8 +83,14 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
           nutritionistId: user.uid,
           amount,
           description: formData.description.trim(),
-          date: new Date(formData.date),
+          date: new Date(formData.date + "T00:00:00"),
           category: formData.category.trim() || undefined,
+          paymentStatus: formData.paymentStatus,
+          isRecurring: formData.isRecurring,
+          recurrenceFrequency: formData.isRecurring ? formData.recurrenceFrequency : undefined,
+          recurrenceEndDate: formData.isRecurring && formData.recurrenceEndDate
+            ? new Date(formData.recurrenceEndDate + "T00:00:00")
+            : undefined,
         });
       }
 
@@ -179,6 +194,81 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
               disabled={loading}
             />
           </div>
+
+          <div className="expense-modal__field">
+            <label className="expense-modal__label">
+              Status <span className="expense-modal__required">*</span>
+            </label>
+            <select
+              className="expense-modal__input"
+              value={formData.paymentStatus}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  paymentStatus: e.target.value as "paid" | "pending",
+                })
+              }
+              disabled={loading}
+            >
+              <option value="paid">Pago</option>
+              <option value="pending">Pendente</option>
+            </select>
+          </div>
+
+          {!transaction && (
+            <div className="expense-modal__field">
+              <label className="expense-modal__label expense-modal__label--toggle">
+                <input
+                  type="checkbox"
+                  checked={formData.isRecurring}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isRecurring: e.target.checked })
+                  }
+                  disabled={loading}
+                  className="expense-modal__checkbox"
+                />
+                Despesa recorrente
+              </label>
+            </div>
+          )}
+
+          {!transaction && formData.isRecurring && (
+            <>
+              <div className="expense-modal__field">
+                <label className="expense-modal__label">Frequência</label>
+                <select
+                  className="expense-modal__input"
+                  value={formData.recurrenceFrequency}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      recurrenceFrequency: e.target.value as "weekly" | "monthly",
+                    })
+                  }
+                  disabled={loading}
+                >
+                  <option value="monthly">Mensal</option>
+                  <option value="weekly">Semanal</option>
+                </select>
+              </div>
+              <div className="expense-modal__field">
+                <label className="expense-modal__label">
+                  Repetir até <span className="expense-modal__required">*</span>
+                </label>
+                <input
+                  type="date"
+                  className="expense-modal__input"
+                  value={formData.recurrenceEndDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, recurrenceEndDate: e.target.value })
+                  }
+                  min={formData.date}
+                  required={formData.isRecurring}
+                  disabled={loading}
+                />
+              </div>
+            </>
+          )}
 
           <div className="expense-modal__actions">
             <Button

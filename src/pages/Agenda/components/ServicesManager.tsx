@@ -9,6 +9,7 @@ import {
   deleteService,
   toggleServiceStatus,
 } from "../../../services/serviceService";
+import { maskCurrency, parseCurrency } from "../../../utils/masks";
 import type { Service, CreateServiceData } from "../../../types/service";
 import "./ServicesManager.css";
 
@@ -35,6 +36,7 @@ export const ServicesManager: React.FC<ServicesManagerProps> = ({ onServiceChang
     duration?: string;
     price?: string;
   }>({});
+  const [priceDisplay, setPriceDisplay] = useState("R$ 0,00");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -58,16 +60,15 @@ export const ServicesManager: React.FC<ServicesManagerProps> = ({ onServiceChang
   };
 
   const handleOpenForm = (service?: Service) => {
+    setError(null);
     if (service) {
       setEditingService(service);
-      setFormData({
-        name: service.name,
-        duration: service.duration,
-        price: service.price,
-      });
+      setFormData({ name: service.name, duration: service.duration, price: service.price });
+      setPriceDisplay(maskCurrency(Math.round(service.price * 100).toString()));
     } else {
       setEditingService(null);
       setFormData({ name: "", duration: 60, price: 0 });
+      setPriceDisplay("R$ 0,00");
     }
     setFormErrors({});
     setIsFormOpen(true);
@@ -77,6 +78,7 @@ export const ServicesManager: React.FC<ServicesManagerProps> = ({ onServiceChang
     setIsFormOpen(false);
     setEditingService(null);
     setFormData({ name: "", duration: 60, price: 0 });
+    setPriceDisplay("R$ 0,00");
     setFormErrors({});
   };
 
@@ -262,6 +264,11 @@ export const ServicesManager: React.FC<ServicesManagerProps> = ({ onServiceChang
             </h3>
 
             <form onSubmit={handleSubmit} className="services-manager__form">
+              {error && (
+                <div className="services-manager__form-error">
+                  <p>{error}</p>
+                </div>
+              )}
               <div className="services-manager__field">
                 <label className="services-manager__label">
                   Nome do Serviço <span className="services-manager__required">*</span>
@@ -300,7 +307,8 @@ export const ServicesManager: React.FC<ServicesManagerProps> = ({ onServiceChang
                       setFormData({ ...formData, duration: Number(e.target.value) })
                     }
                     min="1"
-                    step="5"
+                    max="480"
+                    step="1"
                     disabled={submitting}
                   />
                   {formErrors.duration && (
@@ -315,16 +323,17 @@ export const ServicesManager: React.FC<ServicesManagerProps> = ({ onServiceChang
                     Valor (R$) <span className="services-manager__required">*</span>
                   </label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     className={`services-manager__input ${
                       formErrors.price ? "services-manager__input--error" : ""
                     }`}
-                    value={formData.price}
-                    onChange={(e) =>
-                      setFormData({ ...formData, price: Number(e.target.value) })
-                    }
-                    min="0"
-                    step="0.01"
+                    value={priceDisplay}
+                    onChange={(e) => {
+                      const masked = maskCurrency(e.target.value);
+                      setPriceDisplay(masked);
+                      setFormData({ ...formData, price: parseCurrency(masked) });
+                    }}
                     disabled={submitting}
                   />
                   {formErrors.price && (

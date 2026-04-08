@@ -7,13 +7,11 @@ import "./FoodSearch.css";
 interface FoodSearchProps {
   onSelect: (food: Food) => void;
   placeholder?: string;
-  mealType?: "cafe-manha" | "almoco" | "lanche" | "jantar";
 }
 
 export const FoodSearch: React.FC<FoodSearchProps> = ({
   onSelect,
   placeholder = "Buscar alimento...",
-  mealType,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [foods, setFoods] = useState<Food[]>([]);
@@ -50,15 +48,7 @@ export const FoodSearch: React.FC<FoodSearchProps> = ({
 
       setLoading(true);
       try {
-        console.log(`[FoodSearch] 🔍 Iniciando busca de alimentos do FIRESTORE...`);
-        // Buscar até 100 resultados após aplicar os filtros (aumentado para garantir que todos apareçam)
-        const results = await getFoods(searchTerm, mealType, 100);
-        console.log(`[FoodSearch] ✅ Busca concluída: "${searchTerm}", Refeição: ${mealType}, Resultados do FIRESTORE: ${results.length}`);
-        if (results.length > 0) {
-          console.log("[FoodSearch] Alimentos encontrados no banco:", results.map(f => f.name));
-        } else {
-          console.log("[FoodSearch] ⚠️ Nenhum alimento encontrado no FIRESTORE com os critérios informados");
-        }
+        const results = await getFoods(searchTerm, undefined, 150);
         setFoods(results);
       } catch (error) {
         console.error("Erro ao buscar alimentos:", error);
@@ -70,7 +60,7 @@ export const FoodSearch: React.FC<FoodSearchProps> = ({
 
     const timeoutId = setTimeout(searchFoods, 300);
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, mealType]);
+  }, [searchTerm]);
 
   const handleSelect = (food: Food) => {
     onSelect(food);
@@ -143,7 +133,7 @@ export const FoodSearch: React.FC<FoodSearchProps> = ({
                   </div>
                   <div className="food-search__item-nutrition">
                     <span>{food.calories} kcal</span>
-                    <span>P: {food.protein}g | C: {food.carbs}g | G: {food.fat}g</span>
+                    <span>P: {food.protein}g | C: {food.carbs}g | L: {food.fat}g</span>
                   </div>
                 </li>
               ))}

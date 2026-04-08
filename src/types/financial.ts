@@ -14,6 +14,8 @@ export interface FinancialTransaction {
   paymentStatus?: "paid" | "pending"; // Status do pagamento (pago/pendente)
   // Para despesas (expense)
   category?: string; // categoria da despesa (opcional)
+  isRecurring?: boolean;
+  recurrenceFrequency?: "weekly" | "monthly";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,6 +37,10 @@ export interface CreateExpenseData {
   description: string;
   date: Date;
   category?: string;
+  paymentStatus?: "paid" | "pending";
+  isRecurring?: boolean;
+  recurrenceFrequency?: "weekly" | "monthly";
+  recurrenceEndDate?: Date;
 }
 
 export interface UpdateTransactionData {
@@ -49,8 +55,12 @@ export interface UpdateTransactionData {
 
 export interface FinancialSummary {
   totalIncome: number;
+  totalPaidIncome: number;
+  totalPendingIncome: number;
   totalExpense: number;
-  balance: number;
+  totalPaidExpense: number;
+  totalPendingExpense: number;
+  balance: number; // totalPaidIncome - totalPaidExpense
   incomeCount: number;
   expenseCount: number;
 }

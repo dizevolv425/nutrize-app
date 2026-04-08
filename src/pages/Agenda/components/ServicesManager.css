@@ -306,3 +306,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+.services-manager__form-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: #991b1b;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}

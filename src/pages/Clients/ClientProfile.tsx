@@ -21,6 +21,10 @@ import {
   FaCalendarCheck,
   FaBullseye,
   FaChartLine,
+  FaChevronDown,
+  FaChevronUp,
+  FaToggleOn,
+  FaToggleOff,
 } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import InputField from "../../components/ui/InputField/InputField";
@@ -35,8 +39,12 @@ import {
   updateClient,
   deleteClient,
   getConsultationsByClient,
+  updateConsultation,
+  deleteConsultation,
   getConsultationCount,
   getClientGoals,
+  updateClientGoal,
+  getLatestBodyMeasurements,
 } from "../../services/clientService";
 import { getDietsByClient, deleteDiet } from "../../services/dietService";
 import type { Client, ClientNote, ClientDocument, Consultation, ClientGoal } from "../../types/client";
@@ -81,9 +89,21 @@ export const ClientProfile: React.FC = () => {
   const [editingEmail, setEditingEmail] = useState<string>("");
   const [editingPhone, setEditingPhone] = useState<string>("");
   const [editingBirthDate, setEditingBirthDate] = useState<string>("");
-  const [editingGender, setEditingGender] = useState<"masculino" | "feminino" | "outro">("masculino");
+  const [editingGender, setEditingGender] = useState<"masculino" | "feminino" | "outro" | undefined>(undefined);
   const [updatingInfo, setUpdatingInfo] = useState(false);
   const [infoErrors, setInfoErrors] = useState<Record<string, string>>({});
+
+  // Medidas da última consulta
+  const [latestMeasurements, setLatestMeasurements] = useState<{ weight?: number; height?: number; date?: Date } | null>(null);
+
+  // Consultas: colapso e edição
+  const [expandedConsultations, setExpandedConsultations] = useState<Set<string>>(new Set());
+  const [editingConsultation, setEditingConsultation] = useState<Consultation | null>(null);
+
+  // Objetivos: colapso e edição
+  const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set());
+  const [editingGoal, setEditingGoal] = useState<ClientGoal | null>(null);
+  const [editingGoalStatus, setEditingGoalStatus] = useState<ClientGoal["status"]>("active");
 
   // Estados para edição de altura e peso
   const [isEditingMeasurements, setIsEditingMeasurements] = useState(false);
@@ -98,7 +118,7 @@ export const ClientProfile: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const [clientData, notesData, documentsData, dietsData, consultationsData, goalsData, returnCountData] = await Promise.all([
+      const [clientData, notesData, documentsData, dietsData, consultationsData, goalsData, returnCountData, latestMeasData] = await Promise.all([
         getClientById(clientId),
         getClientNotes(clientId),
         getClientDocuments(clientId),
@@ -106,6 +126,7 @@ export const ClientProfile: React.FC = () => {
         getConsultationsByClient(clientId),
         getClientGoals(clientId),
         getConsultationCount(clientId),
+        getLatestBodyMeasurements(clientId),
       ]);
 
       if (!clientData) {
@@ -120,6 +141,7 @@ export const ClientProfile: React.FC = () => {
       setConsultations(consultationsData);
       setGoals(goalsData);
       setReturnCount(returnCountData);
+      setLatestMeasurements(latestMeasData);
     } catch (err) {
       console.error("Erro ao carregar dados do cliente:", err);
       setError("Erro ao carregar dados. Tente novamente.");
@@ -240,6 +262,92 @@ export const ClientProfile: React.FC = () => {
     // Recarrega os objetivos
     const goalsData = await getClientGoals(clientId);
     setGoals(goalsData);
+  };
+
+  const toggleConsultation = (id: string) => {
+    setExpandedConsultations((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const handleDeleteConsultation = async (consultationId: string) => {
+    if (!confirm("Excluir esta consulta?")) return;
+    try {
+      await deleteConsultation(consultationId);
+      if (clientId) {
+        const [consultationsData, countData] = await Promise.all([
+          getConsultationsByClient(clientId),
+          getConsultationCount(clientId),
+        ]);
+        setConsultations(consultationsData);
+        setReturnCount(countData);
+      }
+    } catch {
+      alert("Erro ao excluir consulta");
+    }
+  };
+
+  const handleSaveEditConsultation = async () => {
+    if (!editingConsultation || !clientId) return;
+    try {
+      await updateConsultation(editingConsultation.id, {
+        date: editingConsultation.date,
+        weight: editingConsultation.weight,
+        height: editingConsultation.height,
+        bodyFat: editingConsultation.bodyFat,
+        muscleMass: editingConsultation.muscleMass,
+        complaints: editingConsultation.complaints,
+        observations: editingConsultation.observations,
+        notes: editingConsultation.notes,
+      });
+      const consultationsData = await getConsultationsByClient(clientId);
+      setConsultations(consultationsData);
+      setEditingConsultation(null);
+    } catch {
+      alert("Erro ao atualizar consulta");
+    }
+  };
+
+  const toggleGoal = (id: string) => {
+    setExpandedGoals((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const handleToggleGoalStatus = async (goal: ClientGoal) => {
+    const newStatus = goal.status === "active" ? "paused" : "active";
+    try {
+      await updateClientGoal(goal.id, { status: newStatus });
+      if (clientId) {
+        const goalsData = await getClientGoals(clientId);
+        setGoals(goalsData);
+      }
+    } catch {
+      alert("Erro ao atualizar objetivo");
+    }
+  };
+
+  const handleSaveEditGoal = async () => {
+    if (!editingGoal || !clientId) return;
+    try {
+      await updateClientGoal(editingGoal.id, {
+        title: editingGoal.title,
+        description: editingGoal.description,
+        targetValue: editingGoal.targetValue,
+        currentValue: editingGoal.currentValue,
+        unit: editingGoal.unit,
+        status: editingGoalStatus,
+      });
+      const goalsData = await getClientGoals(clientId);
+      setGoals(goalsData);
+      setEditingGoal(null);
+    } catch {
+      alert("Erro ao atualizar objetivo");
+    }
   };
 
   const handleStartEditMeasurements = () => {
@@ -424,7 +532,7 @@ export const ClientProfile: React.FC = () => {
 
   const calculateAge = (birthDate: string) => {
     const today = new Date();
-    const birth = new Date(birthDate);
+    const birth = new Date(birthDate + "T00:00:00");
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
 
@@ -707,7 +815,7 @@ export const ClientProfile: React.FC = () => {
               <div className="client-profile__detail-item">
                 <FaBirthdayCake className="client-profile__icon" />
                 <span>
-                  {formatDate(new Date(client.birthDate))} (
+                  {formatDate(new Date(client.birthDate + "T00:00:00"))} (
                   {calculateAge(client.birthDate)} anos)
                 </span>
               </div>
@@ -824,26 +932,40 @@ export const ClientProfile: React.FC = () => {
               </div>
             ) : (
               <div className="client-profile__measurements-display">
-                {client.height || client.weight ? (
+                {latestMeasurements ? (
+                  <>
+                    <div className="client-profile__measurements-row">
+                      {latestMeasurements.height && (
+                        <div className="client-profile__measurements-item">
+                          <span className="client-profile__measurements-label">Altura</span>
+                          <span className="client-profile__measurements-value">{latestMeasurements.height} cm</span>
+                        </div>
+                      )}
+                      {latestMeasurements.weight && (
+                        <div className="client-profile__measurements-item">
+                          <span className="client-profile__measurements-label">Peso</span>
+                          <span className="client-profile__measurements-value">{latestMeasurements.weight} kg</span>
+                        </div>
+                      )}
+                    </div>
+                    {latestMeasurements.date && (
+                      <p className="client-profile__measurements-source">
+                        Dados da consulta de {formatDate(latestMeasurements.date)}
+                      </p>
+                    )}
+                  </>
+                ) : client.height || client.weight ? (
                   <div className="client-profile__measurements-row">
                     {client.height && (
                       <div className="client-profile__measurements-item">
-                        <span className="client-profile__measurements-label">
-                          Altura
-                        </span>
-                        <span className="client-profile__measurements-value">
-                          {client.height} cm
-                        </span>
+                        <span className="client-profile__measurements-label">Altura</span>
+                        <span className="client-profile__measurements-value">{client.height} cm</span>
                       </div>
                     )}
                     {client.weight && (
                       <div className="client-profile__measurements-item">
-                        <span className="client-profile__measurements-label">
-                          Peso
-                        </span>
-                        <span className="client-profile__measurements-value">
-                          {client.weight} kg
-                        </span>
+                        <span className="client-profile__measurements-label">Peso</span>
+                        <span className="client-profile__measurements-value">{client.weight} kg</span>
                       </div>
                     )}
                   </div>
@@ -1196,73 +1318,89 @@ export const ClientProfile: React.FC = () => {
             <div className="client-profile__empty">
               <p>Nenhuma consulta registrada ainda.</p>
               {user?.uid && (
-                <Button
-                  variant="primary"
-                  onClick={() => setIsConsultationModalOpen(true)}
-                  className="client-profile__create-btn"
-                >
+                <Button variant="primary" onClick={() => setIsConsultationModalOpen(true)} className="client-profile__create-btn">
                   <FaPlus /> Registrar Primeira Consulta
                 </Button>
               )}
             </div>
           ) : (
-            consultations.map((consultation) => (
-              <div key={consultation.id} className="client-profile__consultation-card">
-                <div className="client-profile__consultation-header">
-                  <div>
-                    <h3 className="client-profile__consultation-date">
-                      {formatDate(consultation.date)}
-                    </h3>
-                    {(consultation.weight || consultation.height || consultation.bodyFat || consultation.muscleMass) && (
-                      <div className="client-profile__consultation-measurements">
-                        {consultation.weight && (
-                          <span className="client-profile__consultation-measurement">
-                            Peso: {consultation.weight} kg
-                          </span>
-                        )}
-                        {consultation.height && (
-                          <span className="client-profile__consultation-measurement">
-                            Altura: {consultation.height} cm
-                          </span>
-                        )}
-                        {consultation.bodyFat && (
-                          <span className="client-profile__consultation-measurement">
-                            Gordura: {consultation.bodyFat}%
-                          </span>
-                        )}
-                        {consultation.muscleMass && (
-                          <span className="client-profile__consultation-measurement">
-                            Massa Muscular: {consultation.muscleMass} kg
-                          </span>
-                        )}
-                      </div>
-                    )}
+            consultations.map((consultation) => {
+              const isExpanded = expandedConsultations.has(consultation.id);
+              const isEditing = editingConsultation?.id === consultation.id;
+              return (
+                <div key={consultation.id} className="client-profile__consultation-card">
+                  <div
+                    className="client-profile__consultation-header"
+                    onClick={() => !isEditing && toggleConsultation(consultation.id)}
+                    style={{ cursor: isEditing ? "default" : "pointer" }}
+                  >
+                    <div>
+                      <h3 className="client-profile__consultation-date">{formatDate(consultation.date)}</h3>
+                      {!isExpanded && !isEditing && (consultation.weight || consultation.height) && (
+                        <div className="client-profile__consultation-measurements">
+                          {consultation.weight && <span className="client-profile__consultation-measurement">Peso: {consultation.weight} kg</span>}
+                          {consultation.height && <span className="client-profile__consultation-measurement">Altura: {consultation.height} cm</span>}
+                        </div>
+                      )}
+                    </div>
+                    <div className="client-profile__consultation-actions" onClick={(e) => e.stopPropagation()}>
+                      {!isEditing && (
+                        <>
+                          <button className="client-profile__note-btn client-profile__note-btn--edit" onClick={() => { setEditingConsultation({ ...consultation }); setExpandedConsultations((p) => { const n = new Set(p); n.add(consultation.id); return n; }); }} title="Editar"><FaEdit /></button>
+                          <button className="client-profile__note-btn client-profile__note-btn--delete" onClick={() => handleDeleteConsultation(consultation.id)} title="Excluir"><FaTrash /></button>
+                        </>
+                      )}
+                      {isEditing ? <FaChevronUp /> : isExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                    </div>
                   </div>
+
+                  {isEditing ? (
+                    <div className="client-profile__consultation-content">
+                      <div className="client-profile__consultation-edit-row">
+                        <div>
+                          <label className="client-profile__measurements-label">Data</label>
+                          <input type="date" className="client-profile__measurements-input" value={editingConsultation.date.toISOString().split("T")[0]} onChange={(e) => setEditingConsultation((p) => p ? { ...p, date: new Date(e.target.value + "T00:00:00") } : p)} />
+                        </div>
+                        <div>
+                          <label className="client-profile__measurements-label">Peso (kg)</label>
+                          <input type="number" className="client-profile__measurements-input" value={editingConsultation.weight ?? ""} step={0.1} onChange={(e) => setEditingConsultation((p) => p ? { ...p, weight: e.target.value ? parseFloat(e.target.value) : undefined } : p)} />
+                        </div>
+                        <div>
+                          <label className="client-profile__measurements-label">Altura (cm)</label>
+                          <input type="number" className="client-profile__measurements-input" value={editingConsultation.height ?? ""} step={0.1} onChange={(e) => setEditingConsultation((p) => p ? { ...p, height: e.target.value ? parseFloat(e.target.value) : undefined } : p)} />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="client-profile__measurements-label">Queixas</label>
+                        <textarea className="client-profile__textarea" rows={2} value={editingConsultation.complaints ?? ""} onChange={(e) => setEditingConsultation((p) => p ? { ...p, complaints: e.target.value } : p)} />
+                      </div>
+                      <div>
+                        <label className="client-profile__measurements-label">Observações</label>
+                        <textarea className="client-profile__textarea" rows={2} value={editingConsultation.observations ?? ""} onChange={(e) => setEditingConsultation((p) => p ? { ...p, observations: e.target.value } : p)} />
+                      </div>
+                      <div className="client-profile__note-edit-actions">
+                        <Button variant="secondary" size="small" onClick={() => setEditingConsultation(null)}>Cancelar</Button>
+                        <Button variant="primary" size="small" onClick={handleSaveEditConsultation}><FaSave /> Salvar</Button>
+                      </div>
+                    </div>
+                  ) : isExpanded && (
+                    <div className="client-profile__consultation-content">
+                      {(consultation.weight || consultation.height || consultation.bodyFat || consultation.muscleMass) && (
+                        <div className="client-profile__consultation-measurements">
+                          {consultation.weight && <span className="client-profile__consultation-measurement">Peso: {consultation.weight} kg</span>}
+                          {consultation.height && <span className="client-profile__consultation-measurement">Altura: {consultation.height} cm</span>}
+                          {consultation.bodyFat && <span className="client-profile__consultation-measurement">Gordura: {consultation.bodyFat}%</span>}
+                          {consultation.muscleMass && <span className="client-profile__consultation-measurement">Massa Muscular: {consultation.muscleMass} kg</span>}
+                        </div>
+                      )}
+                      {consultation.complaints && <div className="client-profile__consultation-field"><strong>Queixas:</strong><p>{consultation.complaints}</p></div>}
+                      {consultation.observations && <div className="client-profile__consultation-field"><strong>Observações:</strong><p>{consultation.observations}</p></div>}
+                      {consultation.notes && <div className="client-profile__consultation-field"><strong>Anotações:</strong><p>{consultation.notes}</p></div>}
+                    </div>
+                  )}
                 </div>
-                {(consultation.complaints || consultation.observations || consultation.notes) && (
-                  <div className="client-profile__consultation-content">
-                    {consultation.complaints && (
-                      <div className="client-profile__consultation-field">
-                        <strong>Queixas:</strong>
-                        <p>{consultation.complaints}</p>
-                      </div>
-                    )}
-                    {consultation.observations && (
-                      <div className="client-profile__consultation-field">
-                        <strong>Observações:</strong>
-                        <p>{consultation.observations}</p>
-                      </div>
-                    )}
-                    {consultation.notes && (
-                      <div className="client-profile__consultation-field">
-                        <strong>Anotações:</strong>
-                        <p>{consultation.notes}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
@@ -1290,70 +1428,95 @@ export const ClientProfile: React.FC = () => {
             <div className="client-profile__empty">
               <p>Nenhum objetivo definido ainda.</p>
               {user?.uid && (
-                <Button
-                  variant="primary"
-                  onClick={() => setIsGoalModalOpen(true)}
-                  className="client-profile__create-btn"
-                >
+                <Button variant="primary" onClick={() => setIsGoalModalOpen(true)} className="client-profile__create-btn">
                   <FaPlus /> Definir Primeiro Objetivo
                 </Button>
               )}
             </div>
           ) : (
-            goals.map((goal) => (
+            goals.map((goal) => {
+              const isExpanded = expandedGoals.has(goal.id);
+              const isEditing = editingGoal?.id === goal.id;
+              const statusLabel = { active: "Ativo", completed: "Concluído", paused: "Pausado", cancelled: "Cancelado" }[goal.status];
+              return (
               <div key={goal.id} className="client-profile__goal-card">
-                <div className="client-profile__goal-header">
+                <div className="client-profile__goal-header" onClick={() => !isEditing && toggleGoal(goal.id)} style={{ cursor: isEditing ? "default" : "pointer" }}>
                   <div>
                     <h3 className="client-profile__goal-title">{goal.title}</h3>
-                    {goal.description && (
-                      <p className="client-profile__goal-description">{goal.description}</p>
-                    )}
                     <div className="client-profile__goal-meta">
                       <span className="client-profile__goal-status client-profile__goal-status--active">
-                        {goal.status === "active" && "Ativo"}
-                        {goal.status === "completed" && "Concluído"}
-                        {goal.status === "paused" && "Pausado"}
-                        {goal.status === "cancelled" && "Cancelado"}
+                        {statusLabel}
                       </span>
                       <span className="client-profile__goal-date">
                         Iniciado em {formatDate(goal.startDate)}
                       </span>
-                      {goal.targetDate && (
-                        <span className="client-profile__goal-date">
-                          Meta: {formatDate(goal.targetDate)}
-                        </span>
-                      )}
                     </div>
                   </div>
+                  <div className="client-profile__consultation-actions" onClick={(e) => e.stopPropagation()}>
+                    <button className="client-profile__note-btn" onClick={() => handleToggleGoalStatus(goal)} title={goal.status === "active" ? "Pausar" : "Ativar"}>
+                      {goal.status === "active" ? <FaToggleOn style={{ color: "var(--color-primary)" }} /> : <FaToggleOff />}
+                    </button>
+                    <button className="client-profile__note-btn client-profile__note-btn--edit" onClick={() => { setEditingGoal({ ...goal }); setEditingGoalStatus(goal.status); setExpandedGoals((p) => { const n = new Set(p); n.add(goal.id); return n; }); }} title="Editar"><FaEdit /></button>
+                    {isEditing ? <FaChevronUp /> : isExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                  </div>
                 </div>
-                {(goal.currentValue !== null || goal.targetValue !== null) && (
-                  <div className="client-profile__goal-progress">
-                    {goal.currentValue != null && goal.targetValue != null && goal.targetValue > 0 && (
-                      <div className="client-profile__goal-progress-bar">
-                        <div
-                          className="client-profile__goal-progress-fill"
-                          style={{
-                            width: `${Math.min(((goal.currentValue ?? 0) / (goal.targetValue ?? 1)) * 100, 100)}%`,
-                          }}
-                        />
+
+                {isEditing ? (
+                  <div className="client-profile__consultation-content">
+                    <div>
+                      <label className="client-profile__measurements-label">Título</label>
+                      <input className="client-profile__measurements-input" value={editingGoal.title} onChange={(e) => setEditingGoal((p) => p ? { ...p, title: e.target.value } : p)} />
+                    </div>
+                    <div>
+                      <label className="client-profile__measurements-label">Descrição</label>
+                      <textarea className="client-profile__textarea" rows={2} value={editingGoal.description ?? ""} onChange={(e) => setEditingGoal((p) => p ? { ...p, description: e.target.value } : p)} />
+                    </div>
+                    <div className="client-profile__consultation-edit-row">
+                      <div>
+                        <label className="client-profile__measurements-label">Valor atual ({editingGoal.unit})</label>
+                        <input type="number" className="client-profile__measurements-input" value={editingGoal.currentValue ?? ""} onChange={(e) => setEditingGoal((p) => p ? { ...p, currentValue: e.target.value ? parseFloat(e.target.value) : undefined } : p)} />
+                      </div>
+                      <div>
+                        <label className="client-profile__measurements-label">Valor meta ({editingGoal.unit})</label>
+                        <input type="number" className="client-profile__measurements-input" value={editingGoal.targetValue ?? ""} onChange={(e) => setEditingGoal((p) => p ? { ...p, targetValue: e.target.value ? parseFloat(e.target.value) : undefined } : p)} />
+                      </div>
+                      <div>
+                        <label className="client-profile__measurements-label">Status</label>
+                        <select className="client-profile__measurements-input" value={editingGoalStatus} onChange={(e) => setEditingGoalStatus(e.target.value as ClientGoal["status"])}>
+                          <option value="active">Ativo</option>
+                          <option value="paused">Pausado</option>
+                          <option value="completed">Concluído</option>
+                          <option value="cancelled">Cancelado</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="client-profile__note-edit-actions">
+                      <Button variant="secondary" size="small" onClick={() => setEditingGoal(null)}>Cancelar</Button>
+                      <Button variant="primary" size="small" onClick={handleSaveEditGoal}><FaSave /> Salvar</Button>
+                    </div>
+                  </div>
+                ) : isExpanded && (
+                  <div className="client-profile__consultation-content">
+                    {goal.description && <p className="client-profile__goal-description">{goal.description}</p>}
+                    {goal.targetDate && <p className="client-profile__goal-date">Prazo: {formatDate(goal.targetDate)}</p>}
+                    {(goal.currentValue != null || goal.targetValue != null) && (
+                      <div className="client-profile__goal-progress">
+                        {goal.currentValue != null && goal.targetValue != null && goal.targetValue > 0 && (
+                          <div className="client-profile__goal-progress-bar">
+                            <div className="client-profile__goal-progress-fill" style={{ width: `${Math.min(((goal.currentValue ?? 0) / (goal.targetValue ?? 1)) * 100, 100)}%` }} />
+                          </div>
+                        )}
+                        <div className="client-profile__goal-values">
+                          {goal.currentValue != null && <span className="client-profile__goal-value">Atual: {goal.currentValue} {goal.unit || ""}</span>}
+                          {goal.targetValue != null && <span className="client-profile__goal-value">Meta: {goal.targetValue} {goal.unit || ""}</span>}
+                        </div>
                       </div>
                     )}
-                    <div className="client-profile__goal-values">
-                      {goal.currentValue !== null && (
-                        <span className="client-profile__goal-value">
-                          Atual: {goal.currentValue} {goal.unit || ""}
-                        </span>
-                      )}
-                      {goal.targetValue !== null && (
-                        <span className="client-profile__goal-value">
-                          Meta: {goal.targetValue} {goal.unit || ""}
-                        </span>
-                      )}
-                    </div>
                   </div>
                 )}
               </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>

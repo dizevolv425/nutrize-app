@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaPlus, FaSpinner, FaUserFriends } from "react-icons/fa";
+import { FaPlus, FaSpinner, FaUserFriends, FaFileImport } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import { SearchBar } from "./components/SearchBar";
 import { ClientCard } from "./components/ClientCard";
+import { ImportClientsModal } from "./components/ImportClientsModal";
 import { getClientsByNutritionist } from "../../services/clientService";
 import { useAuth } from "../../hooks/useAuth";
 import type { Client } from "../../types/client";
@@ -17,6 +18,7 @@ export const ClientList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [importModalOpen, setImportModalOpen] = useState(false);
 
   const loadClients = useCallback(async () => {
     if (!user?.uid) return;
@@ -81,13 +83,22 @@ export const ClientList: React.FC = () => {
             Gerencie seus clientes e acompanhe o progresso
           </p>
         </div>
-        <Button
-          variant="primary"
-          onClick={handleAddNewClient}
-          className="client-list__add-button"
-        >
-          <FaPlus /> Adicionar Novo Cliente
-        </Button>
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          <Button
+            variant="secondary"
+            onClick={() => setImportModalOpen(true)}
+            className="client-list__add-button"
+          >
+            <FaFileImport /> Importar em lote
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleAddNewClient}
+            className="client-list__add-button"
+          >
+            <FaPlus /> Adicionar Novo Cliente
+          </Button>
+        </div>
       </div>
 
       <div className="client-list__search">
@@ -142,6 +153,14 @@ export const ClientList: React.FC = () => {
             />
           ))}
         </div>
+      )}
+      {user?.uid && (
+        <ImportClientsModal
+          isOpen={importModalOpen}
+          onClose={() => setImportModalOpen(false)}
+          onSuccess={() => { setImportModalOpen(false); loadClients(); }}
+          nutritionistId={user.uid}
+        />
       )}
     </div>
   );

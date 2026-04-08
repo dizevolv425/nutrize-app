@@ -56,27 +56,58 @@ export const createIncome = async (
   }
 };
 
+const createExpenseDoc = async (
+  data: CreateExpenseData,
+  date: Date
+): Promise<string> => {
+  const transactionDoc = {
+    nutritionistId: data.nutritionistId,
+    type: "expense" as const,
+    amount: data.amount,
+    description: data.description,
+    date: Timestamp.fromDate(date),
+    category: data.category || null,
+    paymentStatus: data.paymentStatus || "paid",
+    isRecurring: data.isRecurring || false,
+    recurrenceFrequency: data.recurrenceFrequency || null,
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+  };
+
+  const docRef = await addDoc(
+    collection(db, TRANSACTIONS_COLLECTION),
+    transactionDoc
+  );
+  return docRef.id;
+};
+
 export const createExpense = async (
   data: CreateExpenseData
 ): Promise<string> => {
   try {
-    const transactionDoc = {
-      nutritionistId: data.nutritionistId,
-      type: "expense" as const,
-      amount: data.amount,
-      description: data.description,
-      date: Timestamp.fromDate(data.date),
-      category: data.category || null,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-    };
+    if (data.isRecurring && data.recurrenceFrequency && data.recurrenceEndDate) {
+      const dates: Date[] = [];
+      const current = new Date(data.date);
+      const end = new Date(data.recurrenceEndDate);
 
-    const docRef = await addDoc(
-      collection(db, TRANSACTIONS_COLLECTION),
-      transactionDoc
-    );
+      while (current <= end) {
+        dates.push(new Date(current));
+        if (data.recurrenceFrequency === "monthly") {
+          current.setMonth(current.getMonth() + 1);
+        } else {
+          current.setDate(current.getDate() + 7);
+        }
+      }
 
-    return docRef.id;
+      let firstId = "";
+      for (const date of dates) {
+        const id = await createExpenseDoc(data, date);
+        if (!firstId) firstId = id;
+      }
+      return firstId;
+    }
+
+    return await createExpenseDoc(data, data.date);
   } catch (error) {
     console.error("Erro ao criar despesa:", error);
     throw error;
@@ -227,12 +258,29 @@ export const getFinancialSummary = async (
     const expenses = transactions.filter((t) => t.type === "expense");
 
     const totalIncome = incomes.reduce((sum, t) => sum + t.amount, 0);
+    const totalPaidIncome = incomes
+      .filter((t) => t.paymentStatus === "paid")
+      .reduce((sum, t) => sum + t.amount, 0);
+    const totalPendingIncome = incomes
+      .filter((t) => !t.paymentStatus || t.paymentStatus === "pending")
+      .reduce((sum, t) => sum + t.amount, 0);
+
     const totalExpense = expenses.reduce((sum, t) => sum + t.amount, 0);
+    const totalPaidExpense = expenses
+      .filter((t) => !t.paymentStatus || t.paymentStatus === "paid")
+      .reduce((sum, t) => sum + t.amount, 0);
+    const totalPendingExpense = expenses
+      .filter((t) => t.paymentStatus === "pending")
+      .reduce((sum, t) => sum + t.amount, 0);
 
     return {
       totalIncome,
+      totalPaidIncome,
+      totalPendingIncome,
       totalExpense,
-      balance: totalIncome - totalExpense,
+      totalPaidExpense,
+      totalPendingExpense,
+      balance: totalPaidIncome - totalPaidExpense,
       incomeCount: incomes.length,
       expenseCount: expenses.length,
     };

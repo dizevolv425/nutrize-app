@@ -32,7 +32,11 @@ export const Financeiro: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState({
     totalIncome: 0,
+    totalPaidIncome: 0,
+    totalPendingIncome: 0,
     totalExpense: 0,
+    totalPaidExpense: 0,
+    totalPendingExpense: 0,
     balance: 0,
     incomeCount: 0,
     expenseCount: 0,
@@ -235,17 +239,17 @@ export const Financeiro: React.FC = () => {
         <div className="financeiro__summary-card financeiro__summary-card--income">
           <div className="financeiro__summary-header">
             <FaArrowUp />
-            <span>Receitas</span>
+            <span>Receitas Pagas</span>
           </div>
           <div className="financeiro__summary-value">
-            {formatCurrency(summary.totalIncome)}
+            {formatCurrency(summary.totalPaidIncome)}
           </div>
           <div className="financeiro__summary-count">
             {summary.incomeCount} transação{summary.incomeCount !== 1 ? "ões" : ""}
           </div>
-          {summary.incomeCount > 0 && (
+          {summary.totalPendingIncome > 0 && (
             <div className="financeiro__summary-avg">
-              Média: {formatCurrency(summary.totalIncome / summary.incomeCount)}
+              A receber: {formatCurrency(summary.totalPendingIncome)}
             </div>
           )}
         </div>
@@ -253,24 +257,24 @@ export const Financeiro: React.FC = () => {
         <div className="financeiro__summary-card financeiro__summary-card--expense">
           <div className="financeiro__summary-header">
             <FaArrowDown />
-            <span>Despesas</span>
+            <span>Despesas Pagas</span>
           </div>
           <div className="financeiro__summary-value">
-            {formatCurrency(summary.totalExpense)}
+            {formatCurrency(summary.totalPaidExpense)}
           </div>
           <div className="financeiro__summary-count">
             {summary.expenseCount} transação{summary.expenseCount !== 1 ? "ões" : ""}
           </div>
-          {summary.expenseCount > 0 && (
+          {summary.totalPendingExpense > 0 && (
             <div className="financeiro__summary-avg">
-              Média: {formatCurrency(summary.totalExpense / summary.expenseCount)}
+              Pendente: {formatCurrency(summary.totalPendingExpense)}
             </div>
           )}
         </div>
 
         <div className="financeiro__summary-card financeiro__summary-card--balance">
           <div className="financeiro__summary-header">
-            <span>Saldo</span>
+            <span>Saldo Real</span>
           </div>
           <div className="financeiro__summary-value">
             {formatCurrency(summary.balance)}
@@ -278,9 +282,9 @@ export const Financeiro: React.FC = () => {
           <div className="financeiro__summary-count">
             {summary.balance > 0 ? "Positivo" : summary.balance < 0 ? "Negativo" : "Neutro"}
           </div>
-          {summary.totalIncome > 0 && (
+          {summary.totalPendingIncome > 0 && (
             <div className="financeiro__summary-avg">
-              Margem: {((summary.balance / summary.totalIncome) * 100).toFixed(1)}%
+              Projeção: {formatCurrency(summary.balance + summary.totalPendingIncome)}
             </div>
           )}
         </div>
@@ -438,7 +442,7 @@ export const Financeiro: React.FC = () => {
                       <span>Cliente: {transaction.clientName}</span>
                     </div>
                   )}
-                  {transaction.type === "income" && transaction.paymentStatus && (
+                  {transaction.paymentStatus && (
                     <div
                       className={`financeiro__transaction-status financeiro__transaction-status--${transaction.paymentStatus}`}
                     >

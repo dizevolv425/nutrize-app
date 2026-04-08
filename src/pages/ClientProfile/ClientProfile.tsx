@@ -15,7 +15,7 @@ import { Button } from "../../components/ui/Button/Button";
 import InputField from "../../components/ui/InputField/InputField";
 import { getClientByAuthUid, updateClient } from "../../services/clientService";
 import { clientAuth } from "../../lib/clientFirebaseConfig";
-import type { Client, CreateClientData } from "../../types/client";
+import type { Client } from "../../types/client";
 import "./ClientProfile.css";
 
 export const ClientProfile: React.FC = () => {
@@ -26,15 +26,13 @@ export const ClientProfile: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const [formData, setFormData] = useState<Partial<CreateClientData>>({
-    fullName: "",
-    email: "",
-    phone: "",
-    birthDate: "",
-    gender: "feminino",
-  });
-
-  const [formErrors, setFormErrors] = useState<Partial<Record<keyof CreateClientData, string>>>({});
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [gender, setGender] = useState<"masculino" | "feminino" | "outro" | undefined>(undefined);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     loadClientData();
@@ -58,13 +56,12 @@ export const ClientProfile: React.FC = () => {
       }
 
       setClient(clientData);
-      setFormData({
-        fullName: clientData.fullName,
-        email: clientData.email,
-        phone: clientData.phone,
-        birthDate: clientData.birthDate,
-        gender: clientData.gender,
-      });
+      setFirstName(clientData.firstName || clientData.fullName.split(" ")[0] || "");
+      setLastName(clientData.lastName || clientData.fullName.split(" ").slice(1).join(" ") || "");
+      setEmail(clientData.email);
+      setPhone(clientData.phone);
+      setBirthDate(clientData.birthDate);
+      setGender(clientData.gender);
     } catch (err) {
       console.error("Erro ao carregar dados do cliente:", err);
       setError("Erro ao carregar dados. Tente novamente.");
@@ -73,37 +70,13 @@ export const ClientProfile: React.FC = () => {
     }
   };
 
-  const handleInputChange = (field: keyof CreateClientData, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-    if (formErrors[field]) {
-      setFormErrors((prev) => ({ ...prev, [field]: "" }));
-    }
-  };
-
   const validateForm = (): boolean => {
-    const errors: Partial<Record<keyof CreateClientData, string>> = {};
-
-    if (!formData.fullName?.trim()) {
-      errors.fullName = "Nome completo é obrigatório";
-    }
-
-    if (!formData.email?.trim()) {
-      errors.email = "E-mail é obrigatório";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = "E-mail inválido";
-    }
-
-    if (!formData.phone?.trim()) {
-      errors.phone = "Telefone é obrigatório";
-    }
-
-    if (!formData.birthDate) {
-      errors.birthDate = "Data de nascimento é obrigatória";
-    }
-
+    const errors: Record<string, string> = {};
+    if (!firstName.trim()) errors.firstName = "Nome é obrigatório";
+    if (!email.trim()) errors.email = "E-mail é obrigatório";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "E-mail inválido";
+    if (!phone.trim()) errors.phone = "Telefone é obrigatório";
+    if (!birthDate) errors.birthDate = "Data de nascimento é obrigatória";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -114,16 +87,16 @@ export const ClientProfile: React.FC = () => {
     try {
       setSaving(true);
       setError(null);
-
+      const fullName = `${firstName} ${lastName}`.trim();
       await updateClient(client.id, {
-        fullName: formData.fullName!,
-        email: formData.email!,
-        phone: formData.phone!,
-        birthDate: formData.birthDate!,
-        gender: formData.gender!,
+        firstName,
+        lastName,
+        fullName,
+        email,
+        phone,
+        birthDate,
+        gender,
       });
-
-      // Recarregar dados atualizados
       await loadClientData();
       setIsEditing(false);
     } catch (err) {
@@ -136,20 +109,19 @@ export const ClientProfile: React.FC = () => {
 
   const handleCancel = () => {
     if (client) {
-      setFormData({
-        fullName: client.fullName,
-        email: client.email,
-        phone: client.phone,
-        birthDate: client.birthDate,
-        gender: client.gender,
-      });
+      setFirstName(client.firstName || client.fullName.split(" ")[0] || "");
+      setLastName(client.lastName || client.fullName.split(" ").slice(1).join(" ") || "");
+      setEmail(client.email);
+      setPhone(client.phone);
+      setBirthDate(client.birthDate);
+      setGender(client.gender);
     }
     setFormErrors({});
     setIsEditing(false);
   };
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("pt-BR");
+    return new Date(date + "T00:00:00").toLocaleDateString("pt-BR");
   };
 
   if (loading) {
@@ -172,9 +144,7 @@ export const ClientProfile: React.FC = () => {
     );
   }
 
-  if (!client) {
-    return null;
-  }
+  if (!client) return null;
 
   return (
     <div className="client-profile">
@@ -188,9 +158,7 @@ export const ClientProfile: React.FC = () => {
         </Button>
         <div className="client-profile__header-content">
           <h1 className="client-profile__title">Meu Perfil</h1>
-          <p className="client-profile__subtitle">
-            Gerencie suas informações pessoais
-          </p>
+          <p className="client-profile__subtitle">Gerencie suas informações pessoais</p>
         </div>
       </div>
 
@@ -209,11 +177,7 @@ export const ClientProfile: React.FC = () => {
             <div className="client-profile__card-title">
               <h2>Informações Pessoais</h2>
               {!isEditing && (
-                <Button
-                  variant="secondary"
-                  size="small"
-                  onClick={() => setIsEditing(true)}
-                >
+                <Button variant="secondary" size="small" onClick={() => setIsEditing(true)}>
                   <FaEdit /> Editar
                 </Button>
               )}
@@ -223,22 +187,32 @@ export const ClientProfile: React.FC = () => {
           <div className="client-profile__card-content">
             {isEditing ? (
               <form className="client-profile__form">
-                <InputField
-                  label="Nome Completo"
-                  type="text"
-                  value={formData.fullName || ""}
-                  onChange={(value) => handleInputChange("fullName", value)}
-                  placeholder="Ex: João da Silva"
-                  error={formErrors.fullName}
-                  required
-                  disabled={saving}
-                />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <InputField
+                    label="Nome"
+                    type="text"
+                    value={firstName}
+                    onChange={setFirstName}
+                    placeholder="Ex: João"
+                    error={formErrors.firstName}
+                    required
+                    disabled={saving}
+                  />
+                  <InputField
+                    label="Sobrenome"
+                    type="text"
+                    value={lastName}
+                    onChange={setLastName}
+                    placeholder="Ex: da Silva"
+                    disabled={saving}
+                  />
+                </div>
 
                 <InputField
                   label="E-mail"
                   type="email"
-                  value={formData.email || ""}
-                  onChange={(value) => handleInputChange("email", value)}
+                  value={email}
+                  onChange={setEmail}
                   placeholder="exemplo@email.com"
                   error={formErrors.email}
                   required
@@ -248,8 +222,8 @@ export const ClientProfile: React.FC = () => {
                 <InputField
                   label="Telefone"
                   type="tel"
-                  value={formData.phone || ""}
-                  onChange={(value) => handleInputChange("phone", value)}
+                  value={phone}
+                  onChange={setPhone}
                   placeholder="(11) 99999-9999"
                   error={formErrors.phone}
                   required
@@ -259,86 +233,41 @@ export const ClientProfile: React.FC = () => {
                 <InputField
                   label="Data de Nascimento"
                   type="date"
-                  value={formData.birthDate || ""}
-                  onChange={(value) => handleInputChange("birthDate", value)}
+                  value={birthDate}
+                  onChange={setBirthDate}
                   error={formErrors.birthDate}
                   required
                   disabled={saving}
                 />
 
                 <div className="client-profile__gender">
-                  <label className="client-profile__label">
-                    Sexo <span className="client-profile__required">*</span>
-                  </label>
+                  <label className="client-profile__label">Sexo</label>
                   <div className="client-profile__gender-options">
-                    <label className="client-profile__radio">
-                      <input
-                        type="radio"
-                        name="gender"
-                        value="feminino"
-                        checked={formData.gender === "feminino"}
-                        onChange={(e) =>
-                          handleInputChange("gender", e.target.value)
-                        }
-                        disabled={saving}
-                      />
-                      <span>Feminino</span>
-                    </label>
-
-                    <label className="client-profile__radio">
-                      <input
-                        type="radio"
-                        name="gender"
-                        value="masculino"
-                        checked={formData.gender === "masculino"}
-                        onChange={(e) =>
-                          handleInputChange("gender", e.target.value)
-                        }
-                        disabled={saving}
-                      />
-                      <span>Masculino</span>
-                    </label>
-
-                    <label className="client-profile__radio">
-                      <input
-                        type="radio"
-                        name="gender"
-                        value="outro"
-                        checked={formData.gender === "outro"}
-                        onChange={(e) =>
-                          handleInputChange("gender", e.target.value)
-                        }
-                        disabled={saving}
-                      />
-                      <span>Outro</span>
-                    </label>
+                    {(["feminino", "masculino", "outro"] as const).map((g) => (
+                      <label key={g} className="client-profile__radio">
+                        <input
+                          type="radio"
+                          name="gender"
+                          value={g}
+                          checked={gender === g}
+                          onChange={() => setGender(g)}
+                          disabled={saving}
+                        />
+                        <span style={{ textTransform: "capitalize" }}>{g}</span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
                 <div className="client-profile__form-actions">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={handleCancel}
-                    disabled={saving}
-                  >
+                  <Button type="button" variant="secondary" onClick={handleCancel} disabled={saving}>
                     Cancelar
                   </Button>
-                  <Button
-                    type="button"
-                    variant="primary"
-                    onClick={handleSave}
-                    disabled={saving}
-                  >
+                  <Button type="button" variant="primary" onClick={handleSave} disabled={saving}>
                     {saving ? (
-                      <>
-                        <FaSpinner className="client-profile__spinner" />{" "}
-                        Salvando...
-                      </>
+                      <><FaSpinner className="client-profile__spinner" /> Salvando...</>
                     ) : (
-                      <>
-                        <FaSave /> Salvar Alterações
-                      </>
+                      <><FaSave /> Salvar Alterações</>
                     )}
                   </Button>
                 </div>
@@ -352,7 +281,6 @@ export const ClientProfile: React.FC = () => {
                     <p>{client.fullName}</p>
                   </div>
                 </div>
-
                 <div className="client-profile__info-item">
                   <FaEnvelope className="client-profile__info-icon" />
                   <div>
@@ -360,7 +288,6 @@ export const ClientProfile: React.FC = () => {
                     <p>{client.email}</p>
                   </div>
                 </div>
-
                 <div className="client-profile__info-item">
                   <FaPhone className="client-profile__info-icon" />
                   <div>
@@ -368,7 +295,6 @@ export const ClientProfile: React.FC = () => {
                     <p>{client.phone}</p>
                   </div>
                 </div>
-
                 <div className="client-profile__info-item">
                   <FaBirthdayCake className="client-profile__info-icon" />
                   <div>
@@ -376,14 +302,11 @@ export const ClientProfile: React.FC = () => {
                     <p>{formatDate(client.birthDate)}</p>
                   </div>
                 </div>
-
                 <div className="client-profile__info-item">
                   <FaVenusMars className="client-profile__info-icon" />
                   <div>
                     <label>Sexo</label>
-                    <p style={{ textTransform: "capitalize" }}>
-                      {client.gender}
-                    </p>
+                    <p style={{ textTransform: "capitalize" }}>{client.gender || "—"}</p>
                   </div>
                 </div>
               </div>
@@ -394,4 +317,3 @@ export const ClientProfile: React.FC = () => {
     </div>
   );
 };
-

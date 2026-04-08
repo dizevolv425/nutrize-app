@@ -89,96 +89,32 @@ export const getFoods = async (
     );
     foods = uniqueByName;
 
-    // Filtro por refeição permitida
-    if (mealType) {
-      foods = foods.filter((food) => {
-        // Se o alimento não tem allowedMeals definido, permite em todas as refeições
-        if (!food.allowedMeals || food.allowedMeals.length === 0) {
-          return true;
-        }
-        // Caso contrário, verifica se a refeição está na lista
-        return food.allowedMeals.includes(mealType);
-      });
-    }
-
-    // Filtro de busca local (aplicado após o filtro de refeição)
+    // Filtro de busca local
     if (searchTerm) {
       const searchNormalized = normalizeString(searchTerm);
       console.log(`[getFoods] Buscando por: "${searchTerm}" (normalizado: "${searchNormalized}")`);
       console.log(`[getFoods] Alimentos antes da busca: ${foods.length}`);
       
-      // Dividir o termo de busca em palavras para busca mais flexível
       const searchWords = searchNormalized.split(/\s+/).filter(word => word.length > 0);
-      
-      // Mapeamento de termos de busca para categorias relacionadas
-      const categoryMapping: Record<string, string[]> = {
-        "carne": ["proteínas", "proteina"],
-        "proteina": ["proteínas", "proteina"],
-        "proteínas": ["proteínas", "proteina"],
-        "frango": ["proteínas", "proteina"],
-        "peixe": ["proteínas", "proteina"],
-        "peixes": ["proteínas", "proteina"],
-        "bovina": ["proteínas", "proteina"],
-        "porco": ["proteínas", "proteina"],
-        "suino": ["proteínas", "proteina"],
-        "leite": ["laticínios", "laticinios"],
-        "laticinios": ["laticínios", "laticinios"],
-        "laticínios": ["laticínios", "laticinios"],
-        "queijo": ["laticínios", "laticinios"],
-        "queijos": ["laticínios", "laticinios"],
-        "iogurte": ["laticínios", "laticinios"],
-        "iogurtes": ["laticínios", "laticinios"],
-        "fei": ["leguminosas"],
-        "feijao": ["leguminosas"],
-        "feijão": ["leguminosas"],
-        "feijoes": ["leguminosas"],
-        "feijões": ["leguminosas"],
-        "leguminosa": ["leguminosas"],
-        "leguminosas": ["leguminosas"],
-      };
-      
-      // Obter categorias relacionadas ao termo de busca
-      const relatedCategories = categoryMapping[searchNormalized] || [];
-      if (relatedCategories.length > 0) {
-        console.log(`[getFoods] Categorias relacionadas encontradas:`, relatedCategories);
-      }
-      
       const beforeFilter = foods.length;
+
       foods = foods.filter((food) => {
         const foodNameNormalized = normalizeString(food.name);
         const foodCategoryNormalized = normalizeString(food.category);
-        
-        // Verificar se a categoria está relacionada ao termo de busca
-        const isRelatedCategory = relatedCategories.some(cat => 
-          foodCategoryNormalized.includes(cat)
-        );
-        
-        // Se houver múltiplas palavras, todas devem estar presentes
+
         if (searchWords.length > 1) {
-          return searchWords.every(word => 
-            foodNameNormalized.includes(word) || 
-            foodCategoryNormalized.includes(word)
-          ) || isRelatedCategory;
+          return searchWords.every(word =>
+            foodNameNormalized.includes(word) || foodCategoryNormalized.includes(word)
+          );
         }
-        
-        // Busca simples: verifica se o termo está no nome, categoria ou se é uma categoria relacionada
-        // Busca também em palavras individuais do nome (para encontrar "Leite Desnatado" quando buscar "leite")
-        const nameWords = foodNameNormalized.split(/\s+/);
-        const matchesInName = nameWords.some(word => word.includes(searchNormalized));
-        
-        const matches = (
+
+        return (
           foodNameNormalized.includes(searchNormalized) ||
-          foodCategoryNormalized.includes(searchNormalized) ||
-          matchesInName ||
-          // Verifica se é uma categoria relacionada
-          isRelatedCategory
+          foodCategoryNormalized.includes(searchNormalized)
         );
-        
-        return matches;
       });
-      
+
       console.log(`[getFoods] Alimentos após busca: ${foods.length} (filtrados de ${beforeFilter})`);
-      console.log(`[getFoods] Alimentos encontrados:`, foods.map(f => f.name));
     }
 
     // Aplicar limite apenas no final, após todos os filtros

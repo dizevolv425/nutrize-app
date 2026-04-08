@@ -40,24 +40,28 @@ export const createClient = async (
   nutritionistId: string
 ): Promise<string> => {
   try {
-    // 1. Criar conta de acesso no Firebase Auth (instância separada para clientes)
-    // Senha definida pelo nutricionista
-    if (!clientData.password || clientData.password.length < 6) {
-      throw new Error("A senha deve ter pelo menos 6 caracteres");
+    // 1. Gerar senha automaticamente com os 4 últimos dígitos do telefone
+    const phoneDigits = clientData.phone.replace(/\D/g, "");
+    if (phoneDigits.length < 4) {
+      throw new Error("Telefone deve ter pelo menos 4 dígitos para gerar a senha");
     }
+    const autoPassword = phoneDigits.slice(-4);
 
     const userCredential = await createUserWithEmailAndPassword(
       clientAuth,
       clientData.email,
-      clientData.password
+      autoPassword
     );
 
     const clientUid = userCredential.user.uid;
     console.log("Cliente criado no Firebase Auth. UID:", clientUid, "Email:", clientData.email);
 
     // 2. Criar registro do cliente no Firestore
+    const fullName = `${clientData.firstName} ${clientData.lastName}`.trim();
     const clientDoc = {
-      fullName: clientData.fullName,
+      firstName: clientData.firstName,
+      lastName: clientData.lastName,
+      fullName,
       email: clientData.email,
       phone: clientData.phone,
       birthDate: clientData.birthDate,
@@ -122,15 +126,7 @@ export const getClientsByNutritionist = async (
         updatedAt: doc.data().updatedAt.toDate(),
       })) as Client[];
 
-    // Retornar clientes que:
-    // 1. Têm este nutritionistId específico, OU
-    // 2. Têm authUid mas não têm nutritionistId definido (ou está vazio)
-    //    (clientes auto-cadastrados que ainda não foram associados a nenhum nutricionista)
-    return clients.filter(
-      (client) =>
-        client.nutritionistId === nutritionistId ||
-        (client.authUid && (!client.nutritionistId || client.nutritionistId.trim() === ""))
-    );
+    return clients.filter((client) => client.nutritionistId === nutritionistId);
   } catch (error) {
     console.error("Erro ao buscar clientes:", error);
     throw error;
@@ -316,14 +312,12 @@ export const getClientByAuthUid = async (
 
 export const updateClient = async (
   clientId: string,
-  data: Partial<CreateClientData & { authUid?: string }>
+  data: Record<string, unknown>
 ): Promise<void> => {
   try {
     const docRef = doc(db, CLIENTS_COLLECTION, clientId);
-    // Remover password do update (não deve ser atualizado via updateClient)
-    const { password, ...updateData } = data;
     await updateDoc(docRef, {
-      ...updateData,
+      ...data,
       updatedAt: Timestamp.now(),
     });
   } catch (error) {
@@ -646,6 +640,26 @@ export const getConsultationCount = async (clientId: string): Promise<number> =>
   } catch (error) {
     console.error("Erro ao contar consultas:", error);
     throw error;
+  }
+};
+
+export const getLatestBodyMeasurements = async (
+  clientId: string
+): Promise<{ weight?: number; height?: number; date?: Date } | null> => {
+  try {
+    const consultations = await getConsultationsByClient(clientId);
+    const withMeasurements = consultations.find(
+      (c) => c.weight || c.height
+    );
+    if (!withMeasurements) return null;
+    return {
+      weight: withMeasurements.weight,
+      height: withMeasurements.height,
+      date: withMeasurements.date,
+    };
+  } catch (error) {
+    console.error("Erro ao buscar medidas:", error);
+    return null;
   }
 };
 

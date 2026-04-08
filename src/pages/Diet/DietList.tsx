@@ -230,7 +230,7 @@ export const DietList: React.FC = () => {
                     </span>
                   </div>
                   <div className="diet-card__nutrition-item">
-                    <span className="diet-card__nutrition-label">Gorduras</span>
+                    <span className="diet-card__nutrition-label">Lipídeos</span>
                     <span className="diet-card__nutrition-value">
                       {totals.fat.toFixed(1)}g
                     </span>

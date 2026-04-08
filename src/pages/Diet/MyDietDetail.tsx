@@ -187,7 +187,7 @@ export const MyDietDetail: React.FC = () => {
             </span>
           </div>
           <div className="diet-detail__summary-item">
-            <span className="diet-detail__summary-label">Gorduras</span>
+            <span className="diet-detail__summary-label">Lipídeos</span>
             <span className="diet-detail__summary-value">
               {totals.fat.toFixed(1)}g
             </span>
