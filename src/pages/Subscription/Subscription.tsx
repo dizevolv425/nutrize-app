@@ -189,10 +189,10 @@ export const Subscription: React.FC = () => {
         <div className="subscription-page__footer">
           <Button
             variant="ghost"
-            onClick={() => navigate(paths.login)}
+            onClick={() => navigate(paths.dashboard)}
             className="subscription-page__back-button"
           >
-            Voltar para Login
+            Voltar para Home
           </Button>
         </div>
       </div>
