@@ -6,6 +6,7 @@ import {
   FaEdit,
   FaCheck,
   FaTimes,
+  FaLock,
 } from "react-icons/fa";
 import { useAuth } from "../../hooks/useAuth";
 import {
@@ -33,8 +34,13 @@ const emptyForm = (): CreateForm => ({
   permissions: [],
 });
 
+/** Apenas Plus/Advanced (e admin master) podem cadastrar secretária. */
+const planAllowsSecretary = (plan?: string, role?: string): boolean =>
+  role === "admin" || plan === "plus" || plan === "advanced";
+
 export const SecretaryManagement: React.FC = () => {
   const { user } = useAuth();
+  const canUseSecretary = planAllowsSecretary(user?.plan, user?.role);
   const [secretaries, setSecretaries] = useState<Secretary[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -74,6 +80,11 @@ export const SecretaryManagement: React.FC = () => {
 
   const handleCreate = async () => {
     setFormError(null);
+    if (!canUseSecretary) {
+      return setFormError(
+        "Funcionalidade disponível apenas nos planos Plus e Advanced."
+      );
+    }
     if (!form.name.trim()) return setFormError("Nome é obrigatório.");
     if (!form.email.trim()) return setFormError("E-mail é obrigatório.");
     if (form.permissions.length === 0)
@@ -165,6 +176,16 @@ export const SecretaryManagement: React.FC = () => {
           Crie contas de secretária e defina quais módulos cada uma pode
           acessar.
         </p>
+        {!canUseSecretary && (
+          <div className="secretary-mgmt__plan-banner">
+            <FaLock />
+            <span>
+              Funcionalidade disponível nos planos <strong>Plus</strong> e{" "}
+              <strong>Advanced</strong>.{" "}
+              <a href="/assinatura">Fazer upgrade</a>.
+            </span>
+          </div>
+        )}
         <button
           className="secretary-mgmt__btn-add"
           onClick={() => {
@@ -172,8 +193,10 @@ export const SecretaryManagement: React.FC = () => {
             setFormError(null);
             setShowModal(true);
           }}
+          disabled={!canUseSecretary}
         >
-          <FaPlus size={14} /> Adicionar secretária
+          {canUseSecretary ? <FaPlus size={14} /> : <FaLock size={14} />}{" "}
+          Adicionar secretária
         </button>
       </div>
 
