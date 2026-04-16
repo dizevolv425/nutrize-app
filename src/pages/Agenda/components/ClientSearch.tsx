@@ -108,7 +108,7 @@ export const ClientSearch: React.FC<ClientSearchProps> = ({
   return (
     <div className="client-search" ref={wrapperRef}>
       <label className="client-search__label">
-        Selecione o Cliente <span className="client-search__required">*</span>
+        Selecione o Paciente <span className="client-search__required">*</span>
       </label>
 
       {selectedClient ? (
@@ -140,7 +140,7 @@ export const ClientSearch: React.FC<ClientSearchProps> = ({
             className={`client-search__input ${
               error ? "client-search__input--error" : ""
             }`}
-            placeholder="Buscar cliente por nome, email ou telefone..."
+            placeholder="Buscar paciente por nome, email ou telefone..."
             value={searchTerm}
             onChange={(e) => handleInputChange(e.target.value)}
             onFocus={() => setIsOpen(true)}
@@ -153,14 +153,14 @@ export const ClientSearch: React.FC<ClientSearchProps> = ({
       {isOpen && !selectedClient && (
         <div className="client-search__dropdown">
           {loading ? (
-            <div className="client-search__loading">Carregando clientes...</div>
+            <div className="client-search__loading">Carregando pacientes...</div>
           ) : (
             <>
               {filteredClients.length === 0 ? (
                 <div className="client-search__empty">
                   {searchTerm
-                    ? "Nenhum cliente encontrado"
-                    : "Nenhum cliente cadastrado"}
+                    ? "Nenhum paciente encontrado"
+                    : "Nenhum paciente cadastrado"}
                 </div>
               ) : (
                 <ul className="client-search__list">
@@ -194,7 +194,7 @@ export const ClientSearch: React.FC<ClientSearchProps> = ({
                   setIsQuickFormOpen(true);
                 }}
               >
-                <FaPlus /> Cadastrar novo cliente
+                <FaPlus /> Cadastrar novo paciente
               </button>
             </>
           )}
