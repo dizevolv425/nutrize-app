@@ -8,6 +8,7 @@ export interface User {
   updatedAt: Date;
   role?: "admin" | "nutritionist" | "secretary" | "user";
   phone?: string;
+  photoURL?: string; // URL da foto de perfil no Firebase Storage
   defaultConsultationValue?: number; // Valor padrão de consulta em reais
   trialEndDate?: Date; // Data de término do período de trial (10 dias após cadastro)
   workStartTime?: string; // Horário de início do trabalho (formato HH:mm, ex: "08:00")
