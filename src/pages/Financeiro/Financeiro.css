@@ -71,11 +71,11 @@
 }
 
 .financeiro__summary-card--income {
-  border-left: 4px solid #10b981;
+  border-left: 4px solid #039855;
 }
 
 .financeiro__summary-card--expense {
-  border-left: 4px solid #ef4444;
+  border-left: 4px solid #D92D20;
 }
 
 .financeiro__summary-card--balance {
@@ -286,7 +286,7 @@
 
 .financeiro__filter-btn--clear {
   background: #fee2e2;
-  color: #dc2626;
+  color: #B22018;
   border-color: #fca5a5;
 }
 
@@ -393,11 +393,11 @@
 }
 
 .financeiro__transaction--income::before {
-  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(180deg, #039855 0%, #027A43 100%);
 }
 
 .financeiro__transaction--expense::before {
-  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(180deg, #D92D20 0%, #B22018 100%);
 }
 
 .financeiro__transaction:hover {
@@ -411,12 +411,12 @@
 }
 
 .financeiro__transaction--income:hover {
-  border-color: #10b981;
+  border-color: #039855;
   background: linear-gradient(to right, #fff7ed 0%, white 5%);
 }
 
 .financeiro__transaction--expense:hover {
-  border-color: #ef4444;
+  border-color: #D92D20;
   background: linear-gradient(to right, #fef2f2 0%, white 5%);
 }
 
@@ -452,7 +452,7 @@
 }
 
 .financeiro__transaction--income .financeiro__transaction-type svg {
-  color: #10b981;
+  color: #039855;
 }
 
 .financeiro__transaction--expense .financeiro__transaction-type {
@@ -461,7 +461,7 @@
 }
 
 .financeiro__transaction--expense .financeiro__transaction-type svg {
-  color: #ef4444;
+  color: #D92D20;
 }
 
 .financeiro__transaction-date {
@@ -539,12 +539,12 @@
 }
 
 .financeiro__transaction--income .financeiro__transaction-value {
-  color: #10b981;
+  color: #039855;
   background: #d1fae5;
 }
 
 .financeiro__transaction--expense .financeiro__transaction-value {
-  color: #ef4444;
+  color: #D92D20;
   background: #fee2e2;
 }
 
@@ -584,12 +584,12 @@
 
 .financeiro__transaction-btn--delete {
   background: #fef2f2;
-  color: #ef4444;
+  color: #D92D20;
 }
 
 .financeiro__transaction-btn--delete:hover {
   background: #fee2e2;
-  color: #dc2626;
+  color: #B22018;
 }
 
 @media (max-width: 768px) {
