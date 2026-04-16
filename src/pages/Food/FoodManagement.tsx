@@ -8,6 +8,7 @@ import {
   FaSave,
   FaTimes,
   FaDatabase,
+  FaArrowUp,
 } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import {
@@ -30,6 +31,16 @@ export const FoodManagement: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [tacoConfirmOpen, setTacoConfirmOpen] = useState(false);
   const [tacoImporting, setTacoImporting] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setShowBackToTop(window.scrollY > 300);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () =>
+    window.scrollTo({ top: 0, behavior: "smooth" });
   const [formData, setFormData] = useState<Partial<Food>>({
     name: "",
     category: "",
@@ -465,6 +476,17 @@ export const FoodManagement: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {showBackToTop && (
+        <button
+          className="food-management__back-to-top"
+          onClick={scrollToTop}
+          aria-label="Voltar ao topo"
+          title="Voltar ao topo"
+        >
+          <FaArrowUp />
+        </button>
       )}
     </div>
   );

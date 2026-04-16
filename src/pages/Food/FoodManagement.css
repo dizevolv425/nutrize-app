@@ -285,3 +285,29 @@
   gap: 0.75rem;
   margin-top: 1.5rem;
 }
+
+/* Botão "Voltar ao topo" */
+.food-management__back-to-top {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #e88413;
+  color: #fff;
+  font-size: 1.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(232, 132, 19, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 50;
+}
+
+.food-management__back-to-top:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(232, 132, 19, 0.45);
+}
