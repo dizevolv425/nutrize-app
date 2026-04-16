@@ -103,7 +103,7 @@ export const ClientForm: React.FC = () => {
       await createClient(formData, user.uid);
       navigate("/dashboard/clientes");
     } catch (err: unknown) {
-      console.error("Erro ao criar cliente:", err);
+      console.error("Erro ao criar paciente:", err);
       if (err && typeof err === "object" && "code" in err) {
         if (err.code === "auth/email-already-in-use") {
           setError("E-mail já está em uso");

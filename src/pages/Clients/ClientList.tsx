@@ -34,7 +34,7 @@ export const ClientList: React.FC = () => {
       const clientsData = await getClientsByNutritionist(user.uid);
       setClients(clientsData);
     } catch (error) {
-      setError("Erro ao carregar clientes");
+      setError("Erro ao carregar pacientes");
       console.error("Erro ao carregar clientes:", error);
     } finally {
       setLoading(false);
@@ -74,7 +74,7 @@ export const ClientList: React.FC = () => {
     return (
       <div className="client-list__loading">
         <FaSpinner className="client-list__spinner" />
-        <p>Carregando clientes...</p>
+        <p>Carregando pacientes...</p>
       </div>
     );
   }
@@ -85,7 +85,7 @@ export const ClientList: React.FC = () => {
         <div>
           <h1 className="client-list__title">Meus Pacientes</h1>
           <p className="client-list__subtitle">
-            Gerencie seus clientes e acompanhe o progresso
+            Gerencie seus pacientes e acompanhe o progresso
           </p>
         </div>
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
@@ -104,7 +104,7 @@ export const ClientList: React.FC = () => {
             disabled={isStarterLimitReached}
           >
             {isStarterLimitReached ? <FaLock /> : <FaPlus />}{" "}
-            Adicionar Novo Cliente
+            Adicionar Novo Paciente
           </Button>
         </div>
       </div>
@@ -125,13 +125,13 @@ export const ClientList: React.FC = () => {
         <SearchBar
           value={searchQuery}
           onChange={setSearchQuery}
-          placeholder="Buscar cliente por nome..."
+          placeholder="Buscar paciente por nome..."
         />
         <p className="client-list__count">
           {filteredClients.length}{" "}
           {filteredClients.length === 1
-            ? "cliente encontrado"
-            : "clientes encontrados"}
+            ? "paciente encontrado"
+            : "pacientes encontrados"}
         </p>
       </div>
 
@@ -149,15 +149,15 @@ export const ClientList: React.FC = () => {
           <div className="client-list__empty-icon">
             <FaUserFriends size={64} />
           </div>
-          <h3>Nenhum cliente encontrado</h3>
+          <h3>Nenhum paciente encontrado</h3>
           <p>
             {searchQuery
               ? "Tente buscar com outros filtros."
-              : "Comece adicionando um novo cliente."}
+              : "Comece adicionando um novo paciente."}
           </p>
           {!searchQuery && (
             <Button variant="primary" onClick={handleAddNewClient}>
-              <FaPlus /> Adicionar Primeiro Cliente
+              <FaPlus /> Adicionar Primeiro Paciente
             </Button>
           )}
         </div>

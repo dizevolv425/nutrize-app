@@ -11,7 +11,7 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
-  placeholder = "Buscar cliente por nome...",
+  placeholder = "Buscar paciente por nome...",
 }) => {
   return (
     <div className="search-bar">
