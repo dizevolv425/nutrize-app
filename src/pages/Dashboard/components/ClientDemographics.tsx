@@ -137,7 +137,7 @@ export const ClientDemographics: React.FC = () => {
       <div className="client-demographics__cards">
         <div className="client-demographics__card client-demographics__card--total">
           <FaUsers size={24} className="client-demographics__card-icon" />
-          <p className="client-demographics__card-label">Total de Clientes</p>
+          <p className="client-demographics__card-label">Total de Pacientes</p>
           <p className="client-demographics__card-value">{totalClients}</p>
         </div>
 
@@ -204,7 +204,7 @@ export const ClientDemographics: React.FC = () => {
                   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                 }}
                 formatter={(value: number) => [
-                  `${value} clientes`,
+                  `${value} pacientes`,
                   "Quantidade",
                 ]}
               />
@@ -212,7 +212,7 @@ export const ClientDemographics: React.FC = () => {
                 dataKey="quantidade"
                 fill="#667eea"
                 radius={[8, 8, 0, 0]}
-                name="Clientes"
+                name="Pacientes"
               />
             </BarChart>
           </ResponsiveContainer>

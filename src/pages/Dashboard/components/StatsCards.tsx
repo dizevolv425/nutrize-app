@@ -84,7 +84,7 @@ export const StatsCards: React.FC = () => {
           <FaUsers />
         </div>
         <div className="stats-card__content">
-          <h3 className="stats-card__label">Total de Clientes</h3>
+          <h3 className="stats-card__label">Total de Pacientes</h3>
           <p className="stats-card__value">{stats.totalClients}</p>
         </div>
       </div>
