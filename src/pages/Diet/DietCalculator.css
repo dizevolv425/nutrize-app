@@ -314,3 +314,52 @@
   color: #e88413;
   background: #fff7ed;
 }
+
+/* Drag-and-drop de refeições */
+.diet-calculator__meal-wrap {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  position: relative;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.diet-calculator__meal-wrap--dragging {
+  opacity: 0.5;
+}
+
+.diet-calculator__meal-wrap--over::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #e88413;
+  border-radius: 2px;
+}
+
+.diet-calculator__meal-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  color: #9ca3af;
+  cursor: grab;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.diet-calculator__meal-handle:hover {
+  color: #e88413;
+  background: #fff7ed;
+}
+
+.diet-calculator__meal-handle:active {
+  cursor: grabbing;
+}
+
+.diet-calculator__meal-content {
+  flex: 1;
+  min-width: 0;
+}
