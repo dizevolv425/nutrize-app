@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaCheck, FaTimes, FaCreditCard, FaCrown, FaRocket, FaStar } from "react-icons/fa";
+import { FaCheck, FaCreditCard, FaCrown, FaRocket, FaStar } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import { paths } from "../../routes/paths";
 import "./Subscription.css";
@@ -154,22 +154,12 @@ export const Subscription: React.FC = () => {
                 )}
 
                 <ul className="plan-card__features">
-                  {FEATURES.map((feature) => {
-                    const included = feature[plan.id];
-                    return (
-                      <li
-                        key={feature.label}
-                        className={`plan-card__feature ${!included ? "plan-card__feature--excluded" : ""}`}
-                      >
-                        {included ? (
-                          <FaCheck className="plan-card__feature-icon plan-card__feature-icon--check" />
-                        ) : (
-                          <FaTimes className="plan-card__feature-icon plan-card__feature-icon--times" />
-                        )}
-                        <span>{feature.label}</span>
-                      </li>
-                    );
-                  })}
+                  {FEATURES.filter((feature) => feature[plan.id]).map((feature) => (
+                    <li key={feature.label} className="plan-card__feature">
+                      <FaCheck className="plan-card__feature-icon plan-card__feature-icon--check" />
+                      <span>{feature.label}</span>
+                    </li>
+                  ))}
                 </ul>
 
                 <Button
