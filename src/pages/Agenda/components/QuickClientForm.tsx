@@ -103,15 +103,18 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
       onClose();
     } catch (err: unknown) {
       console.error("Erro ao criar cliente:", err);
-      if (
-        err &&
-        typeof err === "object" &&
-        "code" in err &&
-        err.code === "auth/email-already-in-use"
-      ) {
-        setError("E-mail já está em uso");
+      if (err && typeof err === "object" && "code" in err) {
+        if (err.code === "auth/email-already-in-use") {
+          setError("E-mail já está em uso");
+        } else if (err.code === "auth/invalid-email") {
+          setError("E-mail inválido");
+        } else if (err.code === "auth/weak-password") {
+          setError("Erro ao gerar senha de acesso. Tente novamente.");
+        } else {
+          setError("Erro ao criar paciente. Tente novamente.");
+        }
       } else {
-        setError("Erro ao criar cliente. Tente novamente.");
+        setError("Erro ao criar paciente. Tente novamente.");
       }
     } finally {
       setLoading(false);
@@ -160,8 +163,8 @@ export const QuickClientForm: React.FC<QuickClientFormProps> = ({
 
           <div className="quick-client-form__info">
             <p>
-              Preencha os dados essenciais do paciente. A senha de acesso será gerada automaticamente
-              com os <strong>4 últimos dígitos do telefone</strong>.
+              Preencha os dados essenciais do paciente. Ele receberá um e-mail com um link para{" "}
+              <strong>definir a própria senha de acesso</strong>.
             </p>
           </div>
 

@@ -104,10 +104,18 @@ export const ClientForm: React.FC = () => {
       navigate("/dashboard/clientes");
     } catch (err: unknown) {
       console.error("Erro ao criar cliente:", err);
-      if (err && typeof err === "object" && "code" in err && err.code === "auth/email-already-in-use") {
-        setError("E-mail já está em uso");
+      if (err && typeof err === "object" && "code" in err) {
+        if (err.code === "auth/email-already-in-use") {
+          setError("E-mail já está em uso");
+        } else if (err.code === "auth/invalid-email") {
+          setError("E-mail inválido");
+        } else if (err.code === "auth/weak-password") {
+          setError("Erro ao gerar senha de acesso. Tente novamente.");
+        } else {
+          setError("Erro ao criar paciente");
+        }
       } else {
-        setError("Erro ao criar cliente");
+        setError("Erro ao criar paciente");
       }
     } finally {
       setLoading(false);
@@ -274,8 +282,8 @@ export const ClientForm: React.FC = () => {
 
           <div className="client-form__info">
             <p>
-              <FaInfoCircle size={16} /> A senha de acesso do paciente será gerada automaticamente com os{" "}
-              <strong>4 últimos dígitos do telefone</strong> cadastrado.
+              <FaInfoCircle size={16} /> O paciente receberá um e-mail com um link para{" "}
+              <strong>definir a própria senha de acesso</strong>.
             </p>
           </div>
 
