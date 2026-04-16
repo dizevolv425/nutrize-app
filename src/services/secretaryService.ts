@@ -1,5 +1,9 @@
 import { initializeApp, getApps, deleteApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 import {
   collection,
   doc,
@@ -18,7 +22,6 @@ import type { SecretaryModule, User } from "../types/user";
 export interface CreateSecretaryData {
   name: string;
   email: string;
-  password: string;
   permissions: SecretaryModule[];
 }
 
@@ -28,62 +31,83 @@ export interface Secretary extends User {
   permissions: SecretaryModule[];
 }
 
-/**
- * Cria uma conta Firebase Auth usando app secundário para não deslogar o nutricionista atual.
- */
-async function createSecretaryFirebaseAccount(
-  email: string,
-  password: string
-): Promise<string> {
-  const appName = `secretary-${Date.now()}`;
-  const secondaryApp = initializeApp(firebaseConfig, appName);
-  try {
-    const secondaryAuth = getAuth(secondaryApp);
-    const credential = await createUserWithEmailAndPassword(
-      secondaryAuth,
-      email,
-      password
-    );
-    return credential.user.uid;
-  } finally {
-    // Sempre limpar o app secundário
-    const apps = getApps();
-    const appToDelete = apps.find((a) => a.name === appName);
-    if (appToDelete) await deleteApp(appToDelete);
-  }
+function generateStrongPassword(length = 16): string {
+  const charset =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*-_";
+  const bytes = new Uint8Array(length);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => charset[b % charset.length]).join("");
 }
 
 /**
  * Cria uma nova secretária para o nutricionista.
- * Cria conta no Firebase Auth (app secundário) + documento na coleção 'users'.
+ * Fluxo: cria conta Auth (app secundário) com senha aleatória → grava doc em 'users'
+ * → envia e-mail para a secretária definir a senha. Se o Firestore falhar, faz rollback
+ * da conta Auth para não deixar e-mail órfão.
  */
 export async function createSecretary(
   nutritionistId: string,
   data: CreateSecretaryData
 ): Promise<Secretary> {
-  const uid = await createSecretaryFirebaseAccount(data.email, data.password);
+  const appName = `secretary-${Date.now()}`;
+  const secondaryApp = initializeApp(firebaseConfig, appName);
+  const secondaryAuth = getAuth(secondaryApp);
 
-  const secretaryDoc: Omit<Secretary, "createdAt" | "updatedAt"> & {
-    createdAt: ReturnType<typeof Timestamp.now>;
-    updatedAt: ReturnType<typeof Timestamp.now>;
-  } = {
-    uid,
-    name: data.name,
-    email: data.email,
-    role: "secretary",
-    nutritionistId,
-    permissions: data.permissions,
-    createdAt: Timestamp.now(),
-    updatedAt: Timestamp.now(),
-  };
+  try {
+    const randomPassword = generateStrongPassword();
+    const credential = await createUserWithEmailAndPassword(
+      secondaryAuth,
+      data.email,
+      randomPassword
+    );
+    const uid = credential.user.uid;
 
-  await setDoc(doc(db, "users", uid), secretaryDoc);
+    const secretaryDoc = {
+      uid,
+      name: data.name,
+      email: data.email,
+      role: "secretary" as const,
+      nutritionistId,
+      permissions: data.permissions,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
 
-  return {
-    ...secretaryDoc,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
+    try {
+      await setDoc(doc(db, "users", uid), secretaryDoc);
+    } catch (firestoreErr) {
+      // Rollback: deletar a conta Auth recém-criada p/ não deixar e-mail órfão.
+      try {
+        await credential.user.delete();
+      } catch (deleteErr) {
+        console.error(
+          `[secretaryService] ROLLBACK FALHOU — conta Auth órfã para o e-mail "${data.email}". ` +
+            `Remova manualmente no console do Firebase. Erro original do delete:`,
+          deleteErr
+        );
+      }
+      throw firestoreErr;
+    }
+
+    try {
+      await sendPasswordResetEmail(secondaryAuth, data.email);
+    } catch (emailErr) {
+      console.error(
+        `[secretaryService] Falha ao enviar e-mail de definição de senha para "${data.email}":`,
+        emailErr
+      );
+    }
+
+    return {
+      ...secretaryDoc,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  } finally {
+    const apps = getApps();
+    const appToDelete = apps.find((a) => a.name === appName);
+    if (appToDelete) await deleteApp(appToDelete);
+  }
 }
 
 /**

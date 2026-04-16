@@ -3,11 +3,23 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Regras para a coleção de usuários
     match /users/{userId} {
-      // Permite que usuários autenticados leiam dados de qualquer usuário (necessário para buscar nutricionistas/admins)
+      // Leitura: qualquer usuário autenticado (necessário p/ buscar nutricionistas/admins).
+      // Cobre também: nutricionista listando docs de suas próprias secretárias
+      // (resource.data.nutritionistId == request.auth.uid).
       allow read: if request.auth != null;
-      
-      // Permite que usuários autenticados escrevam apenas seus próprios dados
+
+      // Escrita no próprio documento.
       allow write: if request.auth != null && request.auth.uid == userId;
+
+      // Nutricionista pode criar doc de secretária vinculada ao seu uid.
+      allow create: if request.auth != null
+                    && request.resource.data.role == "secretary"
+                    && request.resource.data.nutritionistId == request.auth.uid;
+
+      // Nutricionista pode atualizar/deletar docs das suas secretárias.
+      allow update, delete: if request.auth != null
+                            && resource.data.role == "secretary"
+                            && resource.data.nutritionistId == request.auth.uid;
     }
     
     // Regras para outras coleções (ajuste conforme necessário)
