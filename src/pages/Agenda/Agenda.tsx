@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Calendar, momentLocalizer, type View } from "react-big-calendar";
 import withDragAndDrop, { type EventInteractionArgs } from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
+import "moment/locale/pt-br";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import { FaPlus, FaSpinner, FaCog } from "react-icons/fa";
