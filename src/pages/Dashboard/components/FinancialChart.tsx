@@ -196,20 +196,20 @@ export const FinancialChart: React.FC = () => {
             <Legend />
             <Bar
               dataKey="receber"
-              fill="#10b981"
+              fill="#039855"
               name="A Receber"
               radius={[8, 8, 0, 0]}
             />
             <Bar
               dataKey="pagar"
-              fill="#ef4444"
+              fill="#D92D20"
               name="A Pagar"
               radius={[8, 8, 0, 0]}
             />
             <Line
               type="monotone"
               dataKey="projecao"
-              stroke="#f59e0b"
+              stroke="#F5BC02"
               strokeWidth={2}
               name="Projeção"
               strokeDasharray="5 5"
