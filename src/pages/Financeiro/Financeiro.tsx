@@ -52,6 +52,7 @@ export const Financeiro: React.FC = () => {
     startDate?: string;
     endDate?: string;
   }>({});
+  const [quickRange, setQuickRange] = useState<"day" | "week" | "month" | null>(null);
 
   useEffect(() => {
     loadData();
@@ -190,6 +191,33 @@ export const Financeiro: React.FC = () => {
 
   const handleClearDateFilter = () => {
     setDateFilter({});
+    setQuickRange(null);
+  };
+
+  const applyQuickRange = (range: "day" | "week" | "month") => {
+    const today = new Date();
+    let start: Date;
+    let end: Date;
+    if (range === "day") {
+      start = new Date(today);
+      end = new Date(today);
+    } else if (range === "week") {
+      start = new Date(today);
+      start.setDate(today.getDate() - today.getDay());
+      end = new Date(start);
+      end.setDate(start.getDate() + 6);
+    } else {
+      start = new Date(today.getFullYear(), today.getMonth(), 1);
+      end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    }
+    const toInputDate = (d: Date) => {
+      const yy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yy}-${mm}-${dd}`;
+    };
+    setDateFilter({ startDate: toInputDate(start), endDate: toInputDate(end) });
+    setQuickRange(range);
   };
 
   if (loading) {
@@ -354,14 +382,41 @@ export const Financeiro: React.FC = () => {
         <div className="financeiro__filter-group">
           <FaCalendarAlt size={16} />
           <span className="financeiro__filter-label">Período:</span>
+          <div className="financeiro__filter-buttons">
+            <button
+              className={`financeiro__filter-btn ${
+                quickRange === "day" ? "financeiro__filter-btn--active" : ""
+              }`}
+              onClick={() => applyQuickRange("day")}
+            >
+              Hoje
+            </button>
+            <button
+              className={`financeiro__filter-btn ${
+                quickRange === "week" ? "financeiro__filter-btn--active" : ""
+              }`}
+              onClick={() => applyQuickRange("week")}
+            >
+              Semana
+            </button>
+            <button
+              className={`financeiro__filter-btn ${
+                quickRange === "month" ? "financeiro__filter-btn--active" : ""
+              }`}
+              onClick={() => applyQuickRange("month")}
+            >
+              Mês
+            </button>
+          </div>
           <div className="financeiro__date-inputs">
             <input
               type="date"
               className="financeiro__date-input"
               value={dateFilter.startDate || ""}
-              onChange={(e) =>
-                setDateFilter({ ...dateFilter, startDate: e.target.value })
-              }
+              onChange={(e) => {
+                setQuickRange(null);
+                setDateFilter({ ...dateFilter, startDate: e.target.value });
+              }}
               placeholder="Data inicial"
             />
             <span className="financeiro__date-separator">até</span>
@@ -369,9 +424,10 @@ export const Financeiro: React.FC = () => {
               type="date"
               className="financeiro__date-input"
               value={dateFilter.endDate || ""}
-              onChange={(e) =>
-                setDateFilter({ ...dateFilter, endDate: e.target.value })
-              }
+              onChange={(e) => {
+                setQuickRange(null);
+                setDateFilter({ ...dateFilter, endDate: e.target.value });
+              }}
               placeholder="Data final"
             />
             {(dateFilter.startDate || dateFilter.endDate) && (
