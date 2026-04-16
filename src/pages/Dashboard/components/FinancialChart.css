@@ -85,3 +85,27 @@
     transform: rotate(360deg);
   }
 }
+
+.financial-chart__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #6b7280;
+  text-align: center;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px dashed #e5e7eb;
+}
+
+.financial-chart__empty p {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.financial-chart__empty-subtitle {
+  margin-top: 0.5rem !important;
+  font-size: 0.8125rem !important;
+  opacity: 0.8;
+}
