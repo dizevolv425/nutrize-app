@@ -315,6 +315,8 @@ export const OccupancyChart: React.FC<OccupancyChartProps> = ({ period }) => {
                 boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
               }}
               formatter={(value: number) => [`${value}%`, "Ocupação"]}
+              wrapperStyle={{ zIndex: 10 }}
+              allowEscapeViewBox={{ x: false, y: false }}
             />
             <Area
               type="monotone"

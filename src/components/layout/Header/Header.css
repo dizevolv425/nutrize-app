@@ -511,6 +511,12 @@
     padding: 0 1rem;
   }
 
+  /* 13.1 — mais respiro entre os ítens do lado direito para o
+     "Assine agora" não encostar no ícone de notificação. */
+  .header__right {
+    gap: 0.75rem;
+  }
+
   .header__brand-logo {
     height: 28px;
   }
@@ -526,6 +532,8 @@
   .header__trial-indicator {
     padding: 0.375rem 0.75rem;
     font-size: 0.8125rem;
+    /* 13.1 — margem à direita reforça a separação do ícone de notificação */
+    margin-right: 0.25rem;
   }
 
   .header__trial-label {

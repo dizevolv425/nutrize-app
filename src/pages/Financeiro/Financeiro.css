@@ -592,6 +592,14 @@
   color: #B22018;
 }
 
+/* 13.1 — cards em coluna única em telas < 640px */
+@media (max-width: 640px) {
+  .financeiro__summary {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
 @media (max-width: 768px) {
   .financeiro {
     padding: 1rem;

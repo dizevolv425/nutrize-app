@@ -18,6 +18,8 @@
   padding: 2rem;
   max-width: 500px;
   width: 100%;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   text-align: center;
 }
@@ -96,16 +98,32 @@
 }
 
 @media (max-width: 600px) {
+  .trial-block-modal-overlay {
+    padding: 0.75rem;
+    align-items: flex-start;
+    padding-top: 1rem;
+  }
+
   .trial-block-modal {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
   .trial-block-modal__title {
     font-size: 1.25rem;
   }
 
+  .trial-block-modal__icon {
+    margin-bottom: 1rem;
+  }
+
+  .trial-block-modal__message,
+  .trial-block-modal__info {
+    margin-bottom: 1rem;
+  }
+
   .trial-block-modal__actions {
     flex-direction: column;
+    gap: 0.5rem;
   }
 
   .trial-block-modal__actions button {

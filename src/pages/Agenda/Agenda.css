@@ -475,10 +475,24 @@
 
   .agenda__calendar-wrapper {
     padding: 1rem;
+    /* 13.1 — scroll horizontal suave para a grade semanal em telas estreitas.
+       A grade mantém seu layout natural e o usuário desliza lateralmente. */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
 
   .agenda__calendar-wrapper > div {
     height: 500px !important;
+    min-width: 640px; /* garante que week/day view não colapse */
+  }
+
+  /* 13.1 — cabeçalho dos dias fixo ao rolar horizontalmente. */
+  .rbc-time-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #fff;
   }
 
   .rbc-toolbar {
