@@ -5,6 +5,7 @@ import {
   FaSpinner,
   FaExclamationTriangle,
   FaTrash,
+  FaFilePdf,
 } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import { MealSection } from "./components/MealSection";
@@ -147,6 +148,14 @@ export const DietDetail: React.FC = () => {
         </Button>
 
         <div className="diet-detail__actions">
+          <Button
+            variant="secondary"
+            onClick={() => window.print()}
+            disabled={deleting}
+            className="diet-detail__export-button"
+          >
+            <FaFilePdf /> Exportar PDF
+          </Button>
           <Button
             variant="secondary"
             onClick={handleDelete}

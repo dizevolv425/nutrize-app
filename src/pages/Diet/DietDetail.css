@@ -185,3 +185,52 @@
   gap: 2rem;
 }
 
+/* ========================================================
+   Print — "Exportar PDF" usa window.print() do navegador.
+   O usuário escolhe "Salvar como PDF" no diálogo de impressão.
+   ======================================================== */
+
+@media print {
+  /* Esconder tudo fora do conteúdo da dieta */
+  body * {
+    visibility: hidden;
+  }
+
+  .diet-detail,
+  .diet-detail * {
+    visibility: visible;
+  }
+
+  .diet-detail {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 1cm;
+    max-width: 100%;
+    box-shadow: none;
+  }
+
+  /* Ocultar botões de ação na impressão */
+  .diet-detail__header,
+  .diet-detail__actions,
+  .diet-detail__back-button,
+  .diet-detail__export-button,
+  .diet-detail__delete-button {
+    display: none !important;
+  }
+
+  /* Garantir que textos fiquem legíveis em B&W */
+  .diet-detail__summary,
+  .diet-detail__info,
+  .diet-detail__meals {
+    page-break-inside: avoid;
+    color: #000;
+    background: #fff;
+  }
+
+  .diet-detail__title {
+    font-size: 18pt;
+    color: #000;
+  }
+}
+
