@@ -147,7 +147,7 @@ export const DietCalculator: React.FC = () => {
 
   const handleSave = async () => {
     if (!selectedClient) {
-      setError("Selecione um cliente");
+      setError("Selecione um paciente");
       return;
     }
 
@@ -231,10 +231,10 @@ export const DietCalculator: React.FC = () => {
       )}
 
       <div className="diet-calculator__form">
-        {/* Seleção de Cliente */}
+        {/* Seleção de Paciente */}
         <div className="diet-calculator__field">
           <label className="diet-calculator__label">
-            Cliente <span className="diet-calculator__required">*</span>
+            Paciente <span className="diet-calculator__required">*</span>
           </label>
           {selectedClient ? (
             <div className="diet-calculator__client-selected">
@@ -269,7 +269,7 @@ export const DietCalculator: React.FC = () => {
                 }
               }}
             >
-              <option value="">Selecione um cliente...</option>
+              <option value="">Selecione um paciente...</option>
               {clients.map((client) => (
                 <option key={client.id} value={client.id}>
                   {client.fullName}

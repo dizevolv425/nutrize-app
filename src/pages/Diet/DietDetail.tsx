@@ -178,7 +178,7 @@ export const DietDetail: React.FC = () => {
           <h1 className="diet-detail__title">{diet.name}</h1>
           {client && (
             <p className="diet-detail__client">
-              Cliente: <strong>{client.fullName}</strong>
+              Paciente: <strong>{client.fullName}</strong>
             </p>
           )}
           {diet.description && (
