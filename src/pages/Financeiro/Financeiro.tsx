@@ -161,7 +161,7 @@ export const Financeiro: React.FC = () => {
   };
 
   const handleExportCSV = () => {
-    const headers = ["Tipo", "Data", "Descrição", "Valor", "Cliente", "Categoria"];
+    const headers = ["Tipo", "Data", "Descrição", "Valor", "Paciente", "Categoria"];
     const rows = transactions.map((t) => [
       t.type === "income" ? "Receita" : "Despesa",
       formatDate(t.date),
@@ -353,14 +353,14 @@ export const Financeiro: React.FC = () => {
 
         <div className="financeiro__filter-group">
           <FaUser size={16} />
-          <span className="financeiro__filter-label">Cliente:</span>
+          <span className="financeiro__filter-label">Paciente:</span>
           <select
             className="financeiro__date-input"
             value={clientFilter || ""}
             onChange={(e) => setClientFilter(e.target.value || null)}
             style={{ minWidth: "200px" }}
           >
-            <option value="">Todos os clientes</option>
+            <option value="">Todos os pacientes</option>
             {clients.map((client) => (
               <option key={client.id} value={client.id}>
                 {client.fullName}
@@ -371,7 +371,7 @@ export const Financeiro: React.FC = () => {
             <button
               className="financeiro__filter-btn financeiro__filter-btn--clear"
               onClick={() => setClientFilter(null)}
-              title="Limpar filtro de cliente"
+              title="Limpar filtro de paciente"
               style={{ marginLeft: "0.5rem" }}
             >
               Limpar
@@ -495,7 +495,7 @@ export const Financeiro: React.FC = () => {
                   {transaction.clientName && (
                     <div className="financeiro__transaction-client">
                       <FaUser size={12} />
-                      <span>Cliente: {transaction.clientName}</span>
+                      <span>Paciente: {transaction.clientName}</span>
                     </div>
                   )}
                   {transaction.paymentStatus && (

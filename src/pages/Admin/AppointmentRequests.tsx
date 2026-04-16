@@ -76,7 +76,7 @@ export const AppointmentRequests: React.FC = () => {
       <div className="appointment-requests__header">
         <h1 className="appointment-requests__title">Solicitações de Consulta</h1>
         <p className="appointment-requests__subtitle">
-          Aprove ou rejeite as solicitações de agendamento dos clientes
+          Aprove ou rejeite as solicitações de agendamento dos pacientes
         </p>
       </div>
 
@@ -101,7 +101,7 @@ export const AppointmentRequests: React.FC = () => {
                         {request.clientName}
                       </h3>
                       <p className="appointment-requests__client-id">
-                        Cliente ID: {request.clientId}
+                        Paciente ID: {request.clientId}
                       </p>
                     </div>
                   </div>
