@@ -187,7 +187,17 @@ export const Agenda: React.FC = () => {
     const weekday = date.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6;
     const timeStr = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
     const available = isTimeSlotAvailable(schedule, weekday, timeStr);
-    return available ? {} : { style: { backgroundColor: "#f5f5f5", cursor: "not-allowed" } };
+    // 5.4 — contraste: disponíveis em branco, indisponíveis em cinza claro
+    // com borda sutil para separação visual.
+    return available
+      ? { style: { backgroundColor: "#FFFFFF" } }
+      : {
+          style: {
+            backgroundColor: "#F9FAFB",
+            borderLeft: "1px solid #E5E7EB",
+            cursor: "not-allowed",
+          },
+        };
   }, [schedule]);
 
   const handleEventDrop = useCallback(async ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {

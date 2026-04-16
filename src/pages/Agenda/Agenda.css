@@ -242,8 +242,16 @@
   border-bottom: none;
 }
 
+/* 5.5 — Highlight de "hoje" apenas no cabeçalho da coluna,
+   sem pintar a coluna inteira. A linha vermelha horizontal de hora
+   atual (.rbc-current-time-indicator abaixo) segue intocada. */
 .rbc-today {
-  background-color: rgba(102, 126, 234, 0.1);
+  background-color: transparent;
+}
+
+.rbc-header.rbc-today {
+  background-color: rgba(232, 132, 19, 0.12);
+  color: #e88413;
 }
 
 .rbc-event {
