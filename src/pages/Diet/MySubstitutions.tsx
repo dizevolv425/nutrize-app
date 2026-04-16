@@ -48,7 +48,7 @@ export const MySubstitutions: React.FC = () => {
       // Buscar cliente pelo authUid
       const client = await getClientByAuthUid(user.uid);
       if (!client) {
-        setError("Cliente não encontrado");
+        setError("Paciente não encontrado");
         setLoading(false);
         return;
       }

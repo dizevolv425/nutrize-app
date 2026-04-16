@@ -41,7 +41,7 @@ export const RequestAppointment: React.FC = () => {
         const clientData = await getClientByAuthUid(authUid);
         
         if (!clientData) {
-          setError("Cliente não encontrado. Entre em contato com o suporte.");
+          setError("Paciente não encontrado. Entre em contato com o suporte.");
           return;
         }
 
@@ -67,7 +67,7 @@ export const RequestAppointment: React.FC = () => {
     }
 
     if (!client) {
-      setError("Cliente não encontrado");
+      setError("Paciente não encontrado");
       return;
     }
 
@@ -143,7 +143,7 @@ export const RequestAppointment: React.FC = () => {
     return (
       <div className="request-appointment">
         <div className="request-appointment__error">
-          <p>{error || "Cliente não encontrado"}</p>
+          <p>{error || "Paciente não encontrado"}</p>
         </div>
       </div>
     );
@@ -174,7 +174,7 @@ export const RequestAppointment: React.FC = () => {
 
         <div className="request-appointment__info">
           <p>
-            <strong>Cliente:</strong> {client.fullName}
+            <strong>Paciente:</strong> {client.fullName}
           </p>
           <p>
             <strong>Email:</strong> {client.email}

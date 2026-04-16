@@ -37,7 +37,7 @@ export const MyDietDetail: React.FC = () => {
         // Verificar se o cliente está autenticado
         const clientData = await getClientByAuthUid(user.uid);
         if (!clientData) {
-          setError("Cliente não encontrado");
+          setError("Paciente não encontrado");
           setLoading(false);
           return;
         }
