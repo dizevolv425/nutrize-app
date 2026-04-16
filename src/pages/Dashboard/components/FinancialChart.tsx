@@ -129,7 +129,7 @@ export const FinancialChart: React.FC = () => {
             {formatCurrency(summary.totalIncome)}
           </p>
           <p className="financial-chart__card-subtitle">
-            {summary.incomeCount} transação{summary.incomeCount !== 1 ? "ões" : ""}
+            {summary.incomeCount} {summary.incomeCount === 1 ? "transação" : "transações"}
           </p>
         </div>
 
@@ -142,7 +142,7 @@ export const FinancialChart: React.FC = () => {
             {formatCurrency(summary.totalExpense)}
           </p>
           <p className="financial-chart__card-subtitle">
-            {summary.expenseCount} transação{summary.expenseCount !== 1 ? "ões" : ""}
+            {summary.expenseCount} {summary.expenseCount === 1 ? "transação" : "transações"}
           </p>
         </div>
 

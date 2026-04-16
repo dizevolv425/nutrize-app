@@ -245,7 +245,7 @@ export const Financeiro: React.FC = () => {
             {formatCurrency(summary.totalPaidIncome)}
           </div>
           <div className="financeiro__summary-count">
-            {summary.incomeCount} transação{summary.incomeCount !== 1 ? "ões" : ""}
+            {summary.incomeCount} {summary.incomeCount === 1 ? "transação" : "transações"}
           </div>
           {summary.totalPendingIncome > 0 && (
             <div className="financeiro__summary-avg">
@@ -263,7 +263,7 @@ export const Financeiro: React.FC = () => {
             {formatCurrency(summary.totalPaidExpense)}
           </div>
           <div className="financeiro__summary-count">
-            {summary.expenseCount} transação{summary.expenseCount !== 1 ? "ões" : ""}
+            {summary.expenseCount} {summary.expenseCount === 1 ? "transação" : "transações"}
           </div>
           {summary.totalPendingExpense > 0 && (
             <div className="financeiro__summary-avg">
