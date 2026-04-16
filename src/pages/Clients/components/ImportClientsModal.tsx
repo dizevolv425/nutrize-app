@@ -107,7 +107,18 @@ export const ImportClientsModal: React.FC<ImportClientsModalProps> = ({
         );
         importResults.push({ row: i + 1, name: `${row.firstName} ${row.lastName}`, status: "success" });
       } catch (err: any) {
-        importResults.push({ row: i + 1, name: `${row.firstName} ${row.lastName}`, status: "error", message: err?.message || "Erro desconhecido" });
+        const code = err?.code as string | undefined;
+        let message: string;
+        if (code === "auth/email-already-in-use") {
+          message = "E-mail já está em uso";
+        } else if (code === "auth/invalid-email") {
+          message = "E-mail inválido";
+        } else if (code === "auth/weak-password") {
+          message = "Erro ao gerar senha de acesso";
+        } else {
+          message = err?.message || "Erro desconhecido";
+        }
+        importResults.push({ row: i + 1, name: `${row.firstName} ${row.lastName}`, status: "error", message });
       }
     }
     setResults(importResults);
