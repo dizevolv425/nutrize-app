@@ -19,6 +19,7 @@ interface OccupancyChartProps {
 }
 
 const SLOTS_PER_HOUR = 2; // 2 slots de 30min por hora
+const MIN_PER_SLOT = 60 / SLOTS_PER_HOUR;
 
 const buildWorkHours = (schedule: NutritionistSchedule | null): string[] => {
   const { minHour, maxHour } = schedule
@@ -29,6 +30,23 @@ const buildWorkHours = (schedule: NutritionistSchedule | null): string[] => {
     hours.push(`${String(h).padStart(2, "0")}:00`);
   }
   return hours;
+};
+
+/** Total de slots (de 30min) disponíveis num weekday, com base no schedule real. */
+const countSlotsForWeekday = (
+  schedule: NutritionistSchedule | null,
+  weekday: number,
+  fallbackHoursCount: number
+): number => {
+  if (!schedule) return fallbackHoursCount * SLOTS_PER_HOUR;
+  const day = schedule.daySchedules.find((d) => d.weekday === weekday);
+  if (!day || !day.isActive) return 0;
+  return day.slots.reduce((acc, slot) => {
+    const [sh, sm] = slot.startTime.split(":").map(Number);
+    const [eh, em] = slot.endTime.split(":").map(Number);
+    const mins = eh * 60 + em - (sh * 60 + sm);
+    return acc + Math.max(0, Math.floor(mins / MIN_PER_SLOT));
+  }, 0);
 };
 
 export const OccupancyChart: React.FC<OccupancyChartProps> = ({ period }) => {
@@ -93,58 +111,70 @@ export const OccupancyChart: React.FC<OccupancyChartProps> = ({ period }) => {
         let totalSlots = 0;
 
         if (period === "day") {
-          // Calcular ocupação por hora do dia
+          // Calcular ocupação por hora do dia — só conta se o dia está ativo no schedule.
+          const todayWeekday = today.getDay();
+          const todayActive =
+            countSlotsForWeekday(scheduleData, todayWeekday, WORK_HOURS.length) > 0;
+
           const hourOccupancy: Record<string, number> = {};
           WORK_HOURS.forEach((hour) => {
             hourOccupancy[hour] = 0;
           });
 
-          scheduledAppointments.forEach((apt) => {
-            const aptDate = new Date(apt.date);
-            if (
-              aptDate.toDateString() === today.toDateString() &&
-              apt.status !== "cancelled"
-            ) {
-              const startHour = apt.startTime.substring(0, 5);
-              const endHour = apt.endTime.substring(0, 5);
+          if (todayActive) {
+            scheduledAppointments.forEach((apt) => {
+              const aptDate = new Date(apt.date);
+              if (
+                aptDate.toDateString() === today.toDateString() &&
+                apt.status !== "cancelled"
+              ) {
+                const startHour = apt.startTime.substring(0, 5);
+                const endHour = apt.endTime.substring(0, 5);
 
-              WORK_HOURS.forEach((hour) => {
-                if (startHour <= hour && hour < endHour) {
-                  hourOccupancy[hour] = (hourOccupancy[hour] || 0) + 1;
-                }
-              });
-            }
-          });
+                WORK_HOURS.forEach((hour) => {
+                  if (startHour <= hour && hour < endHour) {
+                    hourOccupancy[hour] = (hourOccupancy[hour] || 0) + 1;
+                  }
+                });
+              }
+            });
+          }
 
           chartData = WORK_HOURS.map((hour) => {
             const occupied = hourOccupancy[hour] || 0;
-            const maxSlots = SLOTS_PER_HOUR;
-            const ocupacao = Math.min(100, Math.round((occupied / maxSlots) * 100));
+            const maxSlots = todayActive ? SLOTS_PER_HOUR : 0;
+            const ocupacao =
+              maxSlots > 0
+                ? Math.min(100, Math.round((occupied / maxSlots) * 100))
+                : 0;
             totalScheduled += occupied;
             totalSlots += maxSlots;
             return { time: hour, ocupacao };
           });
         } else if (period === "week") {
-          // Calcular ocupação por dia da semana
           const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
           const dayOccupancy: Record<string, { occupied: number; total: number }> = {};
-
           dayNames.forEach((day) => {
             dayOccupancy[day] = { occupied: 0, total: 0 };
           });
 
-          // Calcular para cada dia da semana
           for (let i = 0; i < 7; i++) {
             const currentDay = new Date(startDate);
             currentDay.setDate(startDate.getDate() + i);
-            const dayName = dayNames[currentDay.getDay()];
+            const weekdayNum = currentDay.getDay();
+            const dayName = dayNames[weekdayNum];
 
             const dayAppointments = scheduledAppointments.filter((apt) => {
               const aptDate = new Date(apt.date);
               return aptDate.toDateString() === currentDay.toDateString();
             });
 
-            const daySlots = WORK_HOURS.length * SLOTS_PER_HOUR;
+            // Slots reais daquele dia baseado no schedule do nutricionista.
+            const daySlots = countSlotsForWeekday(
+              scheduleData,
+              weekdayNum,
+              WORK_HOURS.length
+            );
             dayOccupancy[dayName].occupied = dayAppointments.length;
             dayOccupancy[dayName].total = daySlots;
             totalScheduled += dayAppointments.length;
@@ -153,19 +183,19 @@ export const OccupancyChart: React.FC<OccupancyChartProps> = ({ period }) => {
 
           chartData = dayNames.map((day) => {
             const { occupied, total } = dayOccupancy[day];
-            const ocupacao = total > 0 ? Math.round((occupied / total) * 100) : 0;
+            const ocupacao =
+              total > 0 ? Math.min(100, Math.round((occupied / total) * 100)) : 0;
             return { time: day, ocupacao };
           });
         } else {
-          // Mês - calcular por semana
+          // Mês — agregação semanal, slots da semana = soma dos dias ativos.
           const weeks: Array<{ start: Date; end: Date }> = [];
-          let currentWeekStart = new Date(startDate);
+          const currentWeekStart = new Date(startDate);
 
           while (currentWeekStart <= endDate) {
             const weekEnd = new Date(currentWeekStart);
             weekEnd.setDate(currentWeekStart.getDate() + 6);
             if (weekEnd > endDate) weekEnd.setTime(endDate.getTime());
-
             weeks.push({ start: new Date(currentWeekStart), end: weekEnd });
             currentWeekStart.setDate(currentWeekStart.getDate() + 7);
           }
@@ -176,11 +206,23 @@ export const OccupancyChart: React.FC<OccupancyChartProps> = ({ period }) => {
               return aptDate >= week.start && aptDate <= week.end;
             });
 
-            // Calcular total de slots da semana (dias úteis * horas * slots)
-            const weekSlots = 7 * WORK_HOURS.length * SLOTS_PER_HOUR;
+            let weekSlots = 0;
+            const cursor = new Date(week.start);
+            while (cursor <= week.end) {
+              weekSlots += countSlotsForWeekday(
+                scheduleData,
+                cursor.getDay(),
+                WORK_HOURS.length
+              );
+              cursor.setDate(cursor.getDate() + 1);
+            }
+
             const ocupacao =
               weekSlots > 0
-                ? Math.round((weekAppointments.length / weekSlots) * 100)
+                ? Math.min(
+                    100,
+                    Math.round((weekAppointments.length / weekSlots) * 100)
+                  )
                 : 0;
             totalScheduled += weekAppointments.length;
             totalSlots += weekSlots;
@@ -273,6 +315,8 @@ export const OccupancyChart: React.FC<OccupancyChartProps> = ({ period }) => {
                 boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
               }}
               formatter={(value: number) => [`${value}%`, "Ocupação"]}
+              wrapperStyle={{ zIndex: 10 }}
+              allowEscapeViewBox={{ x: false, y: false }}
             />
             <Area
               type="monotone"

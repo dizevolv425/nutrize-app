@@ -202,10 +202,10 @@ export const Dashboard: React.FC = () => {
           <FinancialChart />
         </div>
 
-        {/* Demografia de Clientes */}
+        {/* Demografia de Pacientes */}
         <div className="dashboard__card dashboard__card--large">
           <div className="dashboard__card-header">
-            <h2 className="dashboard__card-title">Perfil de Clientes</h2>
+            <h2 className="dashboard__card-title">Perfil de Pacientes</h2>
           </div>
           <ClientDemographics />
         </div>

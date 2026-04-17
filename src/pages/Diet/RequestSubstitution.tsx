@@ -50,7 +50,7 @@ export const RequestSubstitution: React.FC = () => {
         // Carregar cliente
         const clientData = await getClientByAuthUid(user.uid);
         if (!clientData) {
-          setError("Cliente não encontrado");
+          setError("Paciente não encontrado");
           setLoadingData(false);
           return;
         }

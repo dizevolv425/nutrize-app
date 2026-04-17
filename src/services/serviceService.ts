@@ -8,7 +8,6 @@ import {
   getDoc,
   query,
   where,
-  orderBy,
   Timestamp,
 } from "firebase/firestore";
 import { db } from "../lib/firebaseconfig";
@@ -49,15 +48,15 @@ export const getServicesByNutritionist = async (
   nutritionistId: string
 ): Promise<Service[]> => {
   try {
+    // TODO: criar índice composto se a lista ultrapassar ~200 itens.
     const q = query(
       collection(db, SERVICES_COLLECTION),
-      where("nutritionistId", "==", nutritionistId),
-      orderBy("createdAt", "desc")
+      where("nutritionistId", "==", nutritionistId)
     );
 
     const querySnapshot = await getDocs(q);
 
-    return querySnapshot.docs.map((doc) => {
+    const services = querySnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -66,6 +65,7 @@ export const getServicesByNutritionist = async (
         updatedAt: data.updatedAt.toDate(),
       } as Service;
     });
+    return services.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   } catch (error) {
     console.error("Erro ao buscar serviços:", error);
     throw error;
@@ -79,16 +79,16 @@ export const getActiveServices = async (
   nutritionistId: string
 ): Promise<Service[]> => {
   try {
+    // TODO: criar índice composto se a lista ultrapassar ~200 itens.
     const q = query(
       collection(db, SERVICES_COLLECTION),
       where("nutritionistId", "==", nutritionistId),
-      where("isActive", "==", true),
-      orderBy("createdAt", "desc")
+      where("isActive", "==", true)
     );
 
     const querySnapshot = await getDocs(q);
 
-    return querySnapshot.docs.map((doc) => {
+    const services = querySnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -97,6 +97,7 @@ export const getActiveServices = async (
         updatedAt: data.updatedAt.toDate(),
       } as Service;
     });
+    return services.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   } catch (error) {
     console.error("Erro ao buscar serviços ativos:", error);
     throw error;

@@ -3,6 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { Calendar, momentLocalizer, type View } from "react-big-calendar";
 import withDragAndDrop, { type EventInteractionArgs } from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
+// @ts-expect-error — moment/locale/pt-br não tem tipos declarados
+import "moment/locale/pt-br";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import { FaPlus, FaSpinner, FaCog } from "react-icons/fa";
@@ -187,7 +189,17 @@ export const Agenda: React.FC = () => {
     const weekday = date.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6;
     const timeStr = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
     const available = isTimeSlotAvailable(schedule, weekday, timeStr);
-    return available ? {} : { style: { backgroundColor: "#f5f5f5", cursor: "not-allowed" } };
+    // 5.4 — contraste: disponíveis em branco, indisponíveis em cinza claro
+    // com borda sutil para separação visual.
+    return available
+      ? { style: { backgroundColor: "#FFFFFF" } }
+      : {
+          style: {
+            backgroundColor: "#F9FAFB",
+            borderLeft: "1px solid #E5E7EB",
+            cursor: "not-allowed",
+          },
+        };
   }, [schedule]);
 
   const handleEventDrop = useCallback(async ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {

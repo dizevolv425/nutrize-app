@@ -27,7 +27,7 @@ export const MyDiets: React.FC = () => {
       // Buscar cliente pelo authUid
       const clientData = await getClientByAuthUid(user.uid);
       if (!clientData) {
-        setError("Cliente não encontrado");
+        setError("Paciente não encontrado");
         setLoading(false);
         return;
       }

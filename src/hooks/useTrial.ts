@@ -14,8 +14,20 @@ export const useTrial = (): TrialStatus => {
   const { user } = useAuth();
 
   return useMemo(() => {
-    // Se não for admin/nutricionista ou não tiver trialEndDate, não está em trial
-    if (!user || (user.role !== "admin" && user.role !== "nutritionist") || !user.trialEndDate) {
+    // Admin master tem acesso vitalício — nunca entra em trial nem é bloqueado.
+    if (user?.role === "admin") {
+      return {
+        isTrial: false,
+        isExpired: false,
+        daysRemaining: null,
+        trialEndDate: null,
+        shouldShowWarning: false,
+        shouldBlock: false,
+      };
+    }
+
+    // Se não for nutricionista ou não tiver trialEndDate, não está em trial
+    if (!user || user.role !== "nutritionist" || !user.trialEndDate) {
       return {
         isTrial: false,
         isExpired: false,

@@ -51,7 +51,7 @@ export const ClientProfile: React.FC = () => {
 
       const clientData = await getClientByAuthUid(firebaseUser.uid);
       if (!clientData) {
-        setError("Cliente não encontrado");
+        setError("Paciente não encontrado");
         return;
       }
 

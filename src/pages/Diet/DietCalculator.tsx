@@ -8,6 +8,7 @@ import {
   FaCalculator,
   FaUser,
   FaPlus,
+  FaGripVertical,
 } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import { MealSection } from "./components/MealSection";
@@ -39,6 +40,41 @@ export const DietCalculator: React.FC = () => {
     { id: "3", name: "lanche", foods: [] },
     { id: "4", name: "jantar", foods: [] },
   ]);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleDragStart = (index: number) => (e: React.DragEvent) => {
+    setDraggingIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (index: number) => (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverIndex !== index) setDragOverIndex(index);
+  };
+
+  const handleDrop = (index: number) => (e: React.DragEvent) => {
+    e.preventDefault();
+    if (draggingIndex === null || draggingIndex === index) {
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+    setMeals((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(draggingIndex, 1);
+      next.splice(index, 0, moved);
+      return next;
+    });
+    setDraggingIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggingIndex(null);
+    setDragOverIndex(null);
+  };
 
   useEffect(() => {
     const initialize = async () => {
@@ -147,7 +183,7 @@ export const DietCalculator: React.FC = () => {
 
   const handleSave = async () => {
     if (!selectedClient) {
-      setError("Selecione um cliente");
+      setError("Selecione um paciente");
       return;
     }
 
@@ -231,10 +267,10 @@ export const DietCalculator: React.FC = () => {
       )}
 
       <div className="diet-calculator__form">
-        {/* Seleção de Cliente */}
+        {/* Seleção de Paciente */}
         <div className="diet-calculator__field">
           <label className="diet-calculator__label">
-            Cliente <span className="diet-calculator__required">*</span>
+            Paciente <span className="diet-calculator__required">*</span>
           </label>
           {selectedClient ? (
             <div className="diet-calculator__client-selected">
@@ -269,7 +305,7 @@ export const DietCalculator: React.FC = () => {
                 }
               }}
             >
-              <option value="">Selecione um cliente...</option>
+              <option value="">Selecione um paciente...</option>
               {clients.map((client) => (
                 <option key={client.id} value={client.id}>
                   {client.fullName}
@@ -386,16 +422,40 @@ export const DietCalculator: React.FC = () => {
         </div>
       </div>
 
-      {/* Seções de Refeições */}
+      {/* Seções de Refeições (drag-and-drop para reordenar) */}
       <div className="diet-calculator__meals">
-        {meals.map((meal) => (
-          <MealSection
+        {meals.map((meal, index) => (
+          <div
             key={meal.id}
-            meal={meal}
-            onUpdate={handleMealUpdate}
-            onDelete={() => handleMealDelete(meal.id)}
-            onRename={(name) => handleMealRename(meal.id, name)}
-          />
+            className={`diet-calculator__meal-wrap ${
+              draggingIndex === index ? "diet-calculator__meal-wrap--dragging" : ""
+            } ${
+              dragOverIndex === index && draggingIndex !== index
+                ? "diet-calculator__meal-wrap--over"
+                : ""
+            }`}
+            draggable
+            onDragStart={handleDragStart(index)}
+            onDragOver={handleDragOver(index)}
+            onDrop={handleDrop(index)}
+            onDragEnd={handleDragEnd}
+          >
+            <div
+              className="diet-calculator__meal-handle"
+              aria-label="Arrastar para reordenar"
+              title="Arrastar para reordenar"
+            >
+              <FaGripVertical />
+            </div>
+            <div className="diet-calculator__meal-content">
+              <MealSection
+                meal={meal}
+                onUpdate={handleMealUpdate}
+                onDelete={() => handleMealDelete(meal.id)}
+                onRename={(name) => handleMealRename(meal.id, name)}
+              />
+            </div>
+          </div>
         ))}
         <button className="diet-calculator__add-meal" onClick={handleAddMeal} type="button">
           <FaPlus /> Adicionar Refeição

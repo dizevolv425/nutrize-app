@@ -12,14 +12,19 @@
 }
 
 .profile__header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667085;
   padding: 3rem 2rem;
   text-align: center;
   color: white;
 }
 
-.profile__avatar {
+.profile__avatar-wrap {
+  position: relative;
+  display: inline-block;
   margin-bottom: 1rem;
+}
+
+.profile__avatar {
   display: flex;
   justify-content: center;
 }
@@ -28,10 +33,111 @@
   color: white;
 }
 
+.profile__avatar-img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.profile__avatar-upload {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #e88413;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
 .profile__title {
   font-size: 2rem;
   font-weight: 600;
-  margin: 0;
+  margin: 0 0 1rem 0;
+}
+
+.profile__edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.profile__edit-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.profile__edit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile__edit-actions {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.profile__edit-btn--save {
+  background: #039855;
+  border-color: #039855;
+}
+
+.profile__edit-btn--save:hover:not(:disabled) {
+  background: #027a43;
+}
+
+.profile__edit-btn--cancel {
+  background: transparent;
+}
+
+.profile__form-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.profile__input {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #1f2937;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.profile__input:focus {
+  border-color: #e88413;
+}
+
+.profile__input:disabled {
+  opacity: 0.6;
+  background: #f9fafb;
+}
+
+.profile__spinner {
+  animation: spin 1s linear infinite;
 }
 
 .profile__content {

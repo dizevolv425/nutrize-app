@@ -102,7 +102,7 @@ export const AppointmentRequestsList: React.FC<AppointmentRequestsListProps> = (
                         {request.clientName}
                       </h3>
                       <p className="appointment-requests__client-id">
-                        Cliente ID: {request.clientId}
+                        Paciente ID: {request.clientId}
                       </p>
                     </div>
                   </div>

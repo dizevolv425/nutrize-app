@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import logoColorido from "../../../assets/logo-colorido.png";
 import {
   FaUserCircle,
   FaBell,
@@ -142,9 +141,6 @@ export const Header: React.FC<HeaderProps> = ({
         >
           {isSidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
         </button>
-        <div className="header__brand">
-          <img src={logoColorido} alt="Nutrize" className="header__brand-logo" />
-        </div>
       </div>
 
       <div className="header__right">

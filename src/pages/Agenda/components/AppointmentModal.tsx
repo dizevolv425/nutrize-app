@@ -174,7 +174,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     const newErrors: typeof errors = {};
 
     if (!selectedClient) {
-      newErrors.client = "Selecione um cliente";
+      newErrors.client = "Selecione um paciente";
     }
 
     if (!date) {

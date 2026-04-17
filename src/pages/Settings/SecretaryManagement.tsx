@@ -6,8 +6,7 @@ import {
   FaEdit,
   FaCheck,
   FaTimes,
-  FaEye,
-  FaEyeSlash,
+  FaLock,
 } from "react-icons/fa";
 import { useAuth } from "../../hooks/useAuth";
 import {
@@ -26,26 +25,28 @@ const ALL_MODULES: SecretaryModule[] = ["clients", "agenda", "financial"];
 interface CreateForm {
   name: string;
   email: string;
-  password: string;
   permissions: SecretaryModule[];
 }
 
 const emptyForm = (): CreateForm => ({
   name: "",
   email: "",
-  password: "",
   permissions: [],
 });
 
+/** Apenas Plus/Advanced (e admin master) podem cadastrar secretária. */
+const planAllowsSecretary = (plan?: string, role?: string): boolean =>
+  role === "admin" || plan === "plus" || plan === "advanced";
+
 export const SecretaryManagement: React.FC = () => {
   const { user } = useAuth();
+  const canUseSecretary = planAllowsSecretary(user?.plan, user?.role);
   const [secretaries, setSecretaries] = useState<Secretary[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState<CreateForm>(emptyForm());
   const [creating, setCreating] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
 
   // Estado para edição inline de permissões
   const [editingUid, setEditingUid] = useState<string | null>(null);
@@ -79,10 +80,13 @@ export const SecretaryManagement: React.FC = () => {
 
   const handleCreate = async () => {
     setFormError(null);
+    if (!canUseSecretary) {
+      return setFormError(
+        "Funcionalidade disponível apenas nos planos Plus e Advanced."
+      );
+    }
     if (!form.name.trim()) return setFormError("Nome é obrigatório.");
     if (!form.email.trim()) return setFormError("E-mail é obrigatório.");
-    if (form.password.length < 6)
-      return setFormError("A senha deve ter pelo menos 6 caracteres.");
     if (form.permissions.length === 0)
       return setFormError("Selecione pelo menos um módulo de acesso.");
     if (!user?.uid) return;
@@ -172,6 +176,16 @@ export const SecretaryManagement: React.FC = () => {
           Crie contas de secretária e defina quais módulos cada uma pode
           acessar.
         </p>
+        {!canUseSecretary && (
+          <div className="secretary-mgmt__plan-banner">
+            <FaLock />
+            <span>
+              Funcionalidade disponível nos planos <strong>Plus</strong> e{" "}
+              <strong>Advanced</strong>.{" "}
+              <a href="/assinatura">Fazer upgrade</a>.
+            </span>
+          </div>
+        )}
         <button
           className="secretary-mgmt__btn-add"
           onClick={() => {
@@ -179,8 +193,10 @@ export const SecretaryManagement: React.FC = () => {
             setFormError(null);
             setShowModal(true);
           }}
+          disabled={!canUseSecretary}
         >
-          <FaPlus size={14} /> Adicionar secretária
+          {canUseSecretary ? <FaPlus size={14} /> : <FaLock size={14} />}{" "}
+          Adicionar secretária
         </button>
       </div>
 
@@ -327,32 +343,10 @@ export const SecretaryManagement: React.FC = () => {
               </div>
 
               <div className="secretary-mgmt__field">
-                <label>Senha de acesso</label>
-                <div className="secretary-mgmt__password-wrap">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Mínimo 6 caracteres"
-                    value={form.password}
-                    onChange={(e) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        password: e.target.value,
-                      }))
-                    }
-                  />
-                  <button
-                    type="button"
-                    className="secretary-mgmt__toggle-pw"
-                    onClick={() => setShowPassword((v) => !v)}
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <FaEyeSlash size={16} />
-                    ) : (
-                      <FaEye size={16} />
-                    )}
-                  </button>
-                </div>
+                <p className="secretary-mgmt__info">
+                  A secretária receberá um e-mail com um link para{" "}
+                  <strong>definir a própria senha de acesso</strong>.
+                </p>
               </div>
 
               <div className="secretary-mgmt__field">

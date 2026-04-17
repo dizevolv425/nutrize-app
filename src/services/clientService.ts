@@ -11,7 +11,7 @@ import {
   orderBy,
   Timestamp,
 } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { db } from "../lib/firebaseconfig";
 import { clientAuth } from "../lib/clientFirebaseConfig";
 import type {
@@ -33,6 +33,14 @@ const DOCUMENTS_COLLECTION = "clientDocuments";
 const CONSULTATIONS_COLLECTION = "consultations";
 const GOALS_COLLECTION = "clientGoals";
 
+function generateStrongPassword(length = 16): string {
+  const charset =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*-_";
+  const bytes = new Uint8Array(length);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => charset[b % charset.length]).join("");
+}
+
 // ========== CRUD DE CLIENTES ==========
 
 export const createClient = async (
@@ -40,17 +48,13 @@ export const createClient = async (
   nutritionistId: string
 ): Promise<string> => {
   try {
-    // 1. Gerar senha automaticamente com os 4 últimos dígitos do telefone
-    const phoneDigits = clientData.phone.replace(/\D/g, "");
-    if (phoneDigits.length < 4) {
-      throw new Error("Telefone deve ter pelo menos 4 dígitos para gerar a senha");
-    }
-    const autoPassword = phoneDigits.slice(-4);
+    // 1. Criar conta com senha aleatória forte; paciente define via e-mail de reset.
+    const randomPassword = generateStrongPassword();
 
     const userCredential = await createUserWithEmailAndPassword(
       clientAuth,
       clientData.email,
-      autoPassword
+      randomPassword
     );
 
     const clientUid = userCredential.user.uid;
@@ -94,6 +98,16 @@ export const createClient = async (
       }
     } else {
       console.error("ERRO: Documento não encontrado após criação!");
+    }
+
+    // 3. Enviar e-mail para o paciente definir a própria senha.
+    try {
+      await sendPasswordResetEmail(clientAuth, clientData.email);
+    } catch (emailErr) {
+      console.error(
+        `[clientService] Falha ao enviar e-mail de definição de senha para "${clientData.email}":`,
+        emailErr
+      );
     }
 
     return docRef.id;

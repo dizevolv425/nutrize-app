@@ -101,6 +101,10 @@ export const FinancialChart: React.FC = () => {
     }
   }
 
+  const hasChartData = chartData.some(
+    (d) => d.receber > 0 || d.pagar > 0 || d.projecao > 0
+  );
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -129,7 +133,7 @@ export const FinancialChart: React.FC = () => {
             {formatCurrency(summary.totalIncome)}
           </p>
           <p className="financial-chart__card-subtitle">
-            {summary.incomeCount} transação{summary.incomeCount !== 1 ? "ões" : ""}
+            {summary.incomeCount} {summary.incomeCount === 1 ? "transação" : "transações"}
           </p>
         </div>
 
@@ -142,7 +146,7 @@ export const FinancialChart: React.FC = () => {
             {formatCurrency(summary.totalExpense)}
           </p>
           <p className="financial-chart__card-subtitle">
-            {summary.expenseCount} transação{summary.expenseCount !== 1 ? "ões" : ""}
+            {summary.expenseCount} {summary.expenseCount === 1 ? "transação" : "transações"}
           </p>
         </div>
 
@@ -170,47 +174,56 @@ export const FinancialChart: React.FC = () => {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <ComposedChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="mes" stroke="#6b7280" style={{ fontSize: "12px" }} />
-          <YAxis
-            stroke="#6b7280"
-            style={{ fontSize: "12px" }}
-            tickFormatter={(value) => `R$ ${value / 1000}k`}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "white",
-              border: "1px solid #e5e7eb",
-              borderRadius: "8px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-            }}
-            formatter={(value: number) => formatCurrency(value)}
-          />
-          <Legend />
-          <Bar
-            dataKey="receber"
-            fill="#10b981"
-            name="A Receber"
-            radius={[8, 8, 0, 0]}
-          />
-          <Bar
-            dataKey="pagar"
-            fill="#ef4444"
-            name="A Pagar"
-            radius={[8, 8, 0, 0]}
-          />
-          <Line
-            type="monotone"
-            dataKey="projecao"
-            stroke="#f59e0b"
-            strokeWidth={2}
-            name="Projeção"
-            strokeDasharray="5 5"
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
+      {hasChartData ? (
+        <ResponsiveContainer width="100%" height={300}>
+          <ComposedChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis dataKey="mes" stroke="#6b7280" style={{ fontSize: "12px" }} />
+            <YAxis
+              stroke="#6b7280"
+              style={{ fontSize: "12px" }}
+              tickFormatter={(value) => `R$ ${value / 1000}k`}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "white",
+                border: "1px solid #e5e7eb",
+                borderRadius: "8px",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              }}
+              formatter={(value: number) => formatCurrency(value)}
+            />
+            <Legend />
+            <Bar
+              dataKey="receber"
+              fill="#039855"
+              name="A Receber"
+              radius={[8, 8, 0, 0]}
+            />
+            <Bar
+              dataKey="pagar"
+              fill="#D92D20"
+              name="A Pagar"
+              radius={[8, 8, 0, 0]}
+            />
+            <Line
+              type="monotone"
+              dataKey="projecao"
+              stroke="#F5BC02"
+              strokeWidth={2}
+              name="Projeção"
+              strokeDasharray="5 5"
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      ) : (
+        <div className="financial-chart__empty">
+          <p>Sem dados financeiros no período.</p>
+          <p className="financial-chart__empty-subtitle">
+            Registre receitas e despesas no Financeiro para ver o gráfico.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

@@ -130,7 +130,7 @@ export const ClientProfile: React.FC = () => {
       ]);
 
       if (!clientData) {
-        setError("Cliente não encontrado");
+        setError("Paciente não encontrado");
         return;
       }
 
@@ -561,7 +561,7 @@ export const ClientProfile: React.FC = () => {
     return (
       <div className="client-profile__loading">
         <FaSpinner className="client-profile__spinner" />
-        <p>Carregando dados do cliente...</p>
+        <p>Carregando dados do paciente...</p>
       </div>
     );
   }
@@ -573,7 +573,7 @@ export const ClientProfile: React.FC = () => {
           size={48}
           style={{ color: "#ef4444", marginBottom: "1rem" }}
         />
-        <h2>{error || "Cliente não encontrado"}</h2>
+        <h2>{error || "Paciente não encontrado"}</h2>
         <Button
           variant="primary"
           onClick={() => navigate("/dashboard/clientes")}
@@ -1090,7 +1090,7 @@ export const ClientProfile: React.FC = () => {
           <div className="client-profile__new-note">
             <textarea
               className="client-profile__textarea"
-              placeholder="Adicione uma nova anotação sobre o cliente..."
+              placeholder="Adicione uma nova anotação sobre o paciente..."
               value={newNote}
               onChange={(e) => setNewNote(e.target.value)}
               rows={4}

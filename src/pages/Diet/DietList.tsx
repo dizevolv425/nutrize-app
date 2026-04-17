@@ -148,7 +148,7 @@ export const DietList: React.FC = () => {
           <input
             type="text"
             className="diet-list__search-input"
-            placeholder="Buscar por nome da dieta, cliente ou descrição..."
+            placeholder="Buscar por nome da dieta, paciente ou descrição..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -201,7 +201,7 @@ export const DietList: React.FC = () => {
                   <h3 className="diet-card__name">{diet.name}</h3>
                   {diet.client && (
                     <span className="diet-card__client">
-                      Cliente: {diet.client.fullName}
+                      Paciente: {diet.client.fullName}
                     </span>
                   )}
                 </div>

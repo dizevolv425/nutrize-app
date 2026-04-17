@@ -209,7 +209,7 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({
           <div className="income-modal__field">
             <label className="income-modal__label">
               <FaUser size={14} style={{ marginRight: "4px" }} />
-              Cliente (opcional)
+              Paciente (opcional)
             </label>
             <select
               className="income-modal__input"
@@ -217,7 +217,7 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({
               onChange={handleClientChange}
               disabled={loading || loadingClients}
             >
-              <option value="">Selecione um cliente...</option>
+              <option value="">Selecione um paciente...</option>
               {clients.map((client) => (
                 <option key={client.id} value={client.id}>
                   {client.fullName}
