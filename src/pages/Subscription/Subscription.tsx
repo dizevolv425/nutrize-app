@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaCheck, FaCreditCard, FaCrown, FaRocket, FaStar } from "react-icons/fa";
+import { FaCheck, FaCreditCard, FaCrown, FaRocket, FaStar, FaSpinner } from "react-icons/fa";
 import { Button } from "../../components/ui/Button/Button";
 import { paths } from "../../routes/paths";
+import { useAuth } from "../../hooks/useAuth";
+import { redirectToCheckout } from "../../lib/stripe-client";
 import "./Subscription.css";
 
 type PlanId = "starter" | "plus" | "advanced";
@@ -77,10 +79,38 @@ function yearlySavings(plan: PlanConfig): number {
 
 export const Subscription: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [period, setPeriod] = useState<Period>("monthly");
+  const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSelectPlan = (planId: PlanId) => {
-    navigate(`${paths.checkout}?plan=${planId}&period=${period}`);
+  const handleSelectPlan = async (planId: PlanId) => {
+    setError(null);
+
+    if (!user?.uid) {
+      setError("Você precisa estar logado para assinar um plano.");
+      return;
+    }
+
+    setLoadingPlan(planId);
+    try {
+      await redirectToCheckout({
+        planId,
+        period,
+        userId: user.uid,
+        userEmail: user.email,
+      });
+      // Após redirectToCheckout, o usuário sai desta página; o bloco
+      // abaixo só roda se o redirect falhar antes de navegar.
+    } catch (err) {
+      console.error("Erro ao iniciar checkout:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao iniciar checkout. Tente novamente."
+      );
+      setLoadingPlan(null);
+    }
   };
 
   return (
@@ -93,6 +123,12 @@ export const Subscription: React.FC = () => {
           <p className="subscription-page__subtitle">
             Selecione o plano ideal para o seu negócio e comece a usar hoje mesmo.
           </p>
+
+          {error && (
+            <div className="subscription-page__error" role="alert">
+              {error}
+            </div>
+          )}
 
           {/* Toggle Mensal / Anual */}
           <div className="subscription-page__period-toggle">
@@ -166,9 +202,18 @@ export const Subscription: React.FC = () => {
                   variant={plan.popular ? "primary" : "secondary"}
                   fullWidth
                   onClick={() => handleSelectPlan(plan.id)}
+                  disabled={loadingPlan !== null}
                   className="plan-card__button"
                 >
-                  <FaCreditCard /> Assinar Agora
+                  {loadingPlan === plan.id ? (
+                    <>
+                      <FaSpinner className="plan-card__spinner" /> Redirecionando...
+                    </>
+                  ) : (
+                    <>
+                      <FaCreditCard /> Assinar Agora
+                    </>
+                  )}
                 </Button>
               </div>
             );
