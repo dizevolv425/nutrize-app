@@ -1,9 +1,27 @@
 [build]
   publish = "dist"
   command = "npm run build"
+  functions = "netlify/functions"
+
+[functions]
+  # Usa esbuild nativo do Netlify para compilar as functions TypeScript.
+  node_bundler = "esbuild"
+
+# Redireciona /api/* para as Netlify Functions.
+# Precisa vir ANTES do fallback SPA para não cair no index.html.
+[[redirects]]
+  from = "/api/checkout"
+  to = "/.netlify/functions/checkout"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/webhook/payment"
+  to = "/.netlify/functions/stripe-webhook"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
