@@ -12,14 +12,29 @@ service cloud.firestore {
       allow write: if request.auth != null && request.auth.uid == userId;
 
       // Nutricionista pode criar doc de secretária vinculada ao seu uid.
+      // request.resource.data.uid == userId garante que o doc só pode
+      // ser criado no path que corresponde ao Auth uid real (previne
+      // spam de docs em paths arbitrários).
       allow create: if request.auth != null
                     && request.resource.data.role == "secretary"
-                    && request.resource.data.nutritionistId == request.auth.uid;
+                    && request.resource.data.nutritionistId == request.auth.uid
+                    && request.resource.data.uid == userId;
 
       // Nutricionista pode atualizar/deletar docs das suas secretárias.
       allow update, delete: if request.auth != null
                             && resource.data.role == "secretary"
                             && resource.data.nutritionistId == request.auth.uid;
+    }
+
+    // Dados de billing (Stripe) ficam isolados numa subcoleção para
+    // que o `allow read` amplo em /users/{uid} não vaze stripeCustomerId,
+    // stripeSubscriptionId, stripeSubscriptionStatus, lastPaymentFailedAt etc.
+    match /users/{userId}/billing/{billingDoc} {
+      // Só o próprio usuário pode ler seu billing.
+      allow read: if request.auth != null && request.auth.uid == userId;
+      // Escrita: só o backend via Firebase Admin SDK (webhook Stripe),
+      // que ignora rules. Clientes regulares não podem escrever.
+      allow write: if false;
     }
     
     // Regras para outras coleções (ajuste conforme necessário)

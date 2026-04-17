@@ -35,6 +35,16 @@ O checkout é criado com `client_reference_id = user.uid` e
 `metadata: { userId, planId, period }`. Nos eventos subsequentes, o
 `userId` vem no `subscription.metadata.userId`.
 
+**Onde cada dado é gravado no Firestore:**
+```
+users/{uid}                    ← plan, planPeriod, planActivatedAt, updatedAt
+users/{uid}/billing/current    ← stripeCustomerId, stripeSubscriptionId,
+                                  stripeSubscriptionStatus, lastPaymentFailedAt
+```
+A subcoleção `billing` tem `allow read: if request.auth.uid == userId`
+e `allow write: if false` — só o webhook (via Admin SDK) escreve.
+Isso isola dados sensíveis do Stripe da leitura ampla em `/users/*`.
+
 ---
 
 ## Checklist — passo a passo
@@ -170,13 +180,13 @@ Quando estiver pronto para faturar:
 
 ## Como o código lida com cada caso
 
-| Estado do pagamento | Evento Stripe | Ação no Firestore |
-|---|---|---|
-| Compra nova aprovada | `checkout.session.completed` | seta `plan`, `planPeriod`, `planActivatedAt`, `stripeCustomerId`, `stripeSubscriptionId` |
-| Renovação automática mensal/anual | `customer.subscription.updated` | atualiza `stripeSubscriptionStatus` (active) |
-| Upgrade/downgrade (mudança de price) | `customer.subscription.updated` | atualiza `plan` + `planPeriod` pelo novo priceId |
-| Cancelamento imediato | `customer.subscription.deleted` | remove `plan` / `planPeriod`, marca `stripeSubscriptionStatus: canceled` |
-| Falha de pagamento | `invoice.payment_failed` | grava `lastPaymentFailedAt`; não remove o plano (Stripe tenta novamente — se falhar, dispara `subscription.deleted`) |
+| Estado do pagamento | Evento Stripe | Grava em `users/{uid}` | Grava em `users/{uid}/billing/current` |
+|---|---|---|---|
+| Compra nova aprovada | `checkout.session.completed` | `plan`, `planPeriod`, `planActivatedAt` | `stripeCustomerId`, `stripeSubscriptionId` |
+| Renovação automática mensal/anual | `customer.subscription.updated` | — | `stripeSubscriptionStatus` (active) |
+| Upgrade/downgrade (mudança de price) | `customer.subscription.updated` | `plan`, `planPeriod` (pelo novo priceId) | `stripeSubscriptionStatus` |
+| Cancelamento imediato | `customer.subscription.deleted` | remove `plan` e `planPeriod` | `stripeSubscriptionStatus: canceled` |
+| Falha de pagamento | `invoice.payment_failed` | — | `lastPaymentFailedAt`, `stripeSubscriptionStatus`. Stripe tenta de novo; se esgotar, dispara `subscription.deleted`. |
 
 `useTrial` já trata ausência de `plan` como "trial/free", então o
 downgrade por cancelamento naturalmente volta o usuário ao fluxo
@@ -191,11 +201,12 @@ de assinatura.
   deixa de ser usada — você pode removê-la e a rota `paths.checkout`
   quando tudo estiver testado. Ou manter como fallback offline.
 
-- **`src/pages/CheckoutSuccess/CheckoutSuccess.tsx`** ainda faz
-  `updateDoc` client-side do `user.plan` (comportamento antigo).
-  Em produção, o webhook é a fonte de verdade; a atualização
-  client-side fica como redundância. Pode ser removida depois de
-  confirmar que o webhook é confiável.
+- **`src/pages/CheckoutSuccess/CheckoutSuccess.tsx`** não grava mais
+  nada no Firestore — apenas observa `users/{uid}` via `onSnapshot`
+  e confirma visualmente quando o webhook atualizou o plano. Se o
+  webhook demorar mais de 30s, exibe fallback "pagamento em
+  processamento, atualize a página". O webhook é a única fonte de
+  verdade do plano.
 
 - **`VITE_FIREBASE_FUNCTIONS_URL`** é um env separado usado por
   `clientService.ts` para deletar contas Auth. Nada a ver com Stripe.

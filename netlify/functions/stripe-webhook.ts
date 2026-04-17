@@ -95,6 +95,14 @@ export const handler: Handler = async (event: HandlerEvent) => {
   }
 };
 
+/**
+ * Helper: referência ao doc de billing do usuário (users/{uid}/billing/current).
+ * Isola dados sensíveis do Stripe do doc principal, que tem leitura ampla.
+ */
+function billingRef(userId: string) {
+  return getAdminDb().collection("users").doc(userId).collection("billing").doc("current");
+}
+
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId =
     session.client_reference_id ||
@@ -117,14 +125,26 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
 
-  await getAdminDb().collection("users").doc(userId).update({
+  const db = getAdminDb();
+  const userRef = db.collection("users").doc(userId);
+
+  // Doc principal: só o que o front precisa ler para liberar features.
+  await userRef.update({
     plan: planId,
     planPeriod: period,
     planActivatedAt: FieldValue.serverTimestamp(),
-    stripeCustomerId: session.customer,
-    stripeSubscriptionId: session.subscription,
     updatedAt: FieldValue.serverTimestamp(),
   });
+
+  // Subcoleção billing: dados sensíveis do Stripe, leitura restrita ao owner.
+  await billingRef(userId).set(
+    {
+      stripeCustomerId: session.customer,
+      stripeSubscriptionId: session.subscription,
+      updatedAt: FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
@@ -148,26 +168,43 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     return;
   }
 
-  await getAdminDb().collection("users").doc(userId).update({
+  const db = getAdminDb();
+  await db.collection("users").doc(userId).update({
     plan: mapped.plan,
     planPeriod: mapped.period,
-    stripeSubscriptionStatus: subscription.status,
     updatedAt: FieldValue.serverTimestamp(),
   });
+
+  await billingRef(userId).set(
+    {
+      stripeSubscriptionStatus: subscription.status,
+      updatedAt: FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId as string | undefined;
   if (!userId) return;
 
+  const db = getAdminDb();
+
   // Downgrade: volta ao estado sem plano ativo. O front trata ausência
   // de plan como "trial/free" (ver useTrial).
-  await getAdminDb().collection("users").doc(userId).update({
+  await db.collection("users").doc(userId).update({
     plan: FieldValue.delete(),
     planPeriod: FieldValue.delete(),
-    stripeSubscriptionStatus: "canceled",
     updatedAt: FieldValue.serverTimestamp(),
   });
+
+  await billingRef(userId).set(
+    {
+      stripeSubscriptionStatus: "canceled",
+      updatedAt: FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
@@ -192,9 +229,12 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const userId = sub.metadata?.userId as string | undefined;
   if (!userId) return;
 
-  await getAdminDb().collection("users").doc(userId).update({
-    lastPaymentFailedAt: FieldValue.serverTimestamp(),
-    stripeSubscriptionStatus: sub.status,
-    updatedAt: FieldValue.serverTimestamp(),
-  });
+  await billingRef(userId).set(
+    {
+      lastPaymentFailedAt: FieldValue.serverTimestamp(),
+      stripeSubscriptionStatus: sub.status,
+      updatedAt: FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
 }

@@ -66,6 +66,26 @@
   animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
 }
 
+/* Estado "aguardando webhook" — ícone em azul/cinza neutro. */
+.checkout-success-page__icon--waiting {
+  color: #667085;
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+}
+
+/* Estado "timeout" — ícone em amarelo de aviso. */
+.checkout-success-page__icon--warning {
+  color: #F5BC02;
+}
+
+.checkout-success-page__spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 @keyframes scaleIn {
   0% {
     opacity: 0;
